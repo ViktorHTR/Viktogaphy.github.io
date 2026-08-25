@@ -6,6 +6,7 @@
 <title>จองคิวถ่ายภาพ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,400;0,600;0,700;0,800;1,800;1,900&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
   :root{
     --bg: #0b0a0c;
@@ -100,12 +101,9 @@
   .day-tab.active{ background: linear-gradient(160deg, var(--red-deep), #3a0a15); border-color: var(--red); transform: translateY(-2px); box-shadow:0 8px 20px rgba(216,27,63,.25); }
   .day-tab.active .dow, .day-tab.active .mon{ color:#e9c7cf; }
 
-  .empty-note{ color:var(--grey); font-size:13.5px; padding:18px 4px; }
-
   /* timeline dual-slider */
   .timeline{ position:relative; height:64px; background:var(--panel); border:1px solid var(--line); border-radius:12px; margin-top:40px; }
   .timeline .tick{ position:absolute; top:100%; margin-top:9px; font-size:10.5px; color:var(--grey); transform:translateX(-50%); }
-  .timeline .blocked{ position:absolute; top:0; bottom:0; border-radius:4px; background: repeating-linear-gradient(115deg, rgba(216,27,63,0.30) 0 6px, rgba(216,27,63,0.10) 6px 12px); }
   .timeline .range-fill{ position:absolute; top:0; bottom:0; background: linear-gradient(135deg, var(--red-glow), var(--red-deep)); border-radius:8px; opacity:.92; }
   .timeline .handle{
     position:absolute; top:50%; width:24px; height:24px; border-radius:50%; background:#fff; border:3px solid var(--red);
@@ -121,13 +119,11 @@
   .duration-summary .d-label{ font-size:11px; color:var(--grey); text-transform:uppercase; letter-spacing:.06em;}
   .duration-summary .d-value{ font-family:'Bebas Neue'; font-size:26px; margin-top:2px; }
 
-  .warn{ color:var(--red-glow); font-size:13px; margin-top:14px; display:none; }
-  .warn.show{ display:block; }
-
   .field{ margin-bottom:14px; max-width:380px; }
   .field label{ font-size:12.5px; color:var(--grey); display:block; margin-bottom:6px; }
   .field input{ width:100%; background:#0f0a0c; border:1px solid var(--line); border-radius:8px; padding:10px 12px; color:var(--white); font-family:'IBM Plex Sans Thai'; font-size:14px; }
   .field input:focus{ outline:none; border-color:var(--red); }
+  .field .hint{ font-size:11.5px; color:var(--grey); margin-top:5px; }
   .error-msg{ color:var(--red-glow); font-size:12.5px; margin-top:-6px; margin-bottom:10px; display:none; max-width:380px; }
 
   .recap{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin-bottom:20px; max-width:380px; display:flex; align-items:center; gap:14px; }
@@ -160,17 +156,6 @@
   .spinner{ display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; margin-right:8px; vertical-align:-2px; }
   @keyframes spin{ to{ transform:rotate(360deg);} }
 
-  .booking-list{ display:flex; flex-direction:column; gap:10px; }
-  .booking-card{ display:flex; align-items:center; gap:16px; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
-  .booking-card .stub{ font-family:'Bebas Neue'; font-size:14px; color:var(--red-glow); border-right:1px dashed var(--line); padding-right:16px; min-width:108px; text-align:center; }
-  .booking-card .stub .tt{ font-size:19px; color:#fff; }
-  .booking-card .info{ flex:1; }
-  .booking-card .info .nm{ font-weight:600; font-size:14.5px; }
-  .booking-card .info .ph{ font-size:12.5px; color:var(--grey); margin-top:2px; }
-  .booking-card .info .pr{ font-size:12px; color:#5fd98a; margin-top:2px; }
-  .cancel-btn{ border:1px solid var(--red); color:var(--red-glow); background:transparent; padding:8px 14px; border-radius:8px; font-size:13px; cursor:pointer; font-family:'IBM Plex Sans Thai'; transition: background .15s, color .15s; }
-  .cancel-btn:hover{ background:var(--red); color:#fff; }
-
   .wizard-actions{ display:flex; gap:10px; margin-top:24px; align-items:center; }
   .btn-primary{ background: linear-gradient(135deg, var(--red-glow), var(--red-deep)); border:none; color:#fff; padding:12px 22px; border-radius:9px; font-weight:600; font-family:'IBM Plex Sans Thai'; cursor:pointer; font-size:14px; transition: opacity .15s, transform .1s; }
   .btn-primary:disabled{ opacity:.35; cursor:not-allowed; }
@@ -179,8 +164,13 @@
   .btn-ghost:hover{ border-color:var(--red); color:var(--white); }
 
   .done-badge{ width:64px; height:64px; border-radius:50%; margin-bottom:18px; background: linear-gradient(135deg, var(--red-glow), var(--red-deep)); display:flex; align-items:center; justify-content:center; font-size:28px; box-shadow: 0 10px 30px rgba(216,27,63,0.35); }
+  .done-badge.fail{ background: linear-gradient(135deg, #8a8a8a, #3a3a3a); }
 
-  .toast{ position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--panel); border:1px solid var(--red); color:#fff; padding:12px 20px; border-radius:10px; font-size:13.5px; opacity:0; pointer-events:none; transition: all .25s; z-index:60; }
+  .setup-note{ margin-top:26px; max-width:520px; border:1px dashed var(--line); border-radius:10px; padding:14px 16px; font-size:12.5px; color:var(--grey); line-height:1.7; }
+  .setup-note b{ color:var(--white); }
+  .setup-note code{ background:var(--panel-2); padding:1px 6px; border-radius:4px; font-size:11.5px; }
+
+  .toast{ position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--panel); border:1px solid var(--red); color:#fff; padding:12px 20px; border-radius:10px; font-size:13.5px; opacity:0; pointer-events:none; transition: all .25s; z-index:60; max-width:90vw; }
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 
   footer{ position:relative; z-index:1; border-top:1px solid var(--line); margin-top:20px; padding:26px 24px 40px; max-width:1080px; margin-left:auto; margin-right:auto; display:flex; flex-wrap:wrap; gap:18px 32px; align-items:center; justify-content:space-between; }
@@ -201,7 +191,7 @@
 <header class="hero">
   <span class="eyebrow">Photography Booking</span>
   <h1 class="hero-title">จองคิว<br><span class="accent">ถ่ายภาพ</span> ออนไลน์</h1>
-  <p class="hero-sub">เลือกวัน ลากช่วงเวลาที่ต้องการถ่าย ชำระเงิน แล้วรับการยืนยันทันที ยกเลิกได้ตลอดเวลา</p>
+  <p class="hero-sub">เลือกวัน ลากช่วงเวลาที่ต้องการถ่าย กรอกอีเมลติดต่อกลับ แล้วระบบจะส่งรายละเอียดการจองเข้า Gmail ของช่างภาพให้ทันที</p>
   <div class="price-tag">
     <div class="p-label">เริ่มต้นเพียง</div>
     <div class="p-value">150<span class="p-unit">.-/ชม.</span></div>
@@ -234,10 +224,9 @@
       <div><div class="d-label">รวม</div><div class="d-value" id="dHours">-</div></div>
       <div><div class="d-label">ราคา</div><div class="d-value" id="dPrice">-</div></div>
     </div>
-    <div class="warn" id="overlapWarn">ช่วงเวลาที่เลือกทับซ้อนกับคิวที่จองไว้แล้ว กรุณาลากเลือกช่วงใหม่</div>
     <div class="wizard-actions">
       <button class="btn-ghost" onclick="goStep(1)">ย้อนกลับ</button>
-      <button class="btn-primary" id="toStep3" onclick="goStep(3)">ถัดไป</button>
+      <button class="btn-primary" onclick="goStep(3)">ถัดไป</button>
     </div>
   </div>
 
@@ -247,7 +236,12 @@
     <div class="recap" id="recap3"></div>
     <div class="field"><label>ชื่อผู้จอง</label><input id="inName" type="text" placeholder="ชื่อ-นามสกุล" /></div>
     <div class="field"><label>เบอร์โทรศัพท์</label><input id="inPhone" type="tel" placeholder="08x-xxx-xxxx" /></div>
-    <div class="error-msg" id="errMsg">กรุณากรอกชื่อและเบอร์โทรให้ครบถ้วน</div>
+    <div class="field">
+      <label>อีเมลติดต่อกลับ</label>
+      <input id="inEmail" type="email" placeholder="you@example.com" />
+      <div class="hint">ใช้สำหรับให้ช่างภาพติดต่อกลับเพื่อยืนยันคิว</div>
+    </div>
+    <div class="error-msg" id="errMsg">กรุณากรอกชื่อ เบอร์โทร และอีเมลให้ครบถ้วนและถูกต้อง</div>
 
     <div class="field"><label>โค้ดส่วนลด (ถ้ามี)</label>
       <div class="discount-row">
@@ -271,7 +265,7 @@
     <div class="price-recap" id="priceRecap4" style="margin-bottom:20px;"></div>
 
     <div id="freeBlock" style="display:none;">
-      <div class="free-note">ยอดชำระ 0 บาท — ไม่ต้องชำระเงิน กดยืนยันเพื่อจองคิวได้เลย</div>
+      <div class="free-note">ยอดชำระ 0 บาท — ไม่ต้องชำระเงิน กดยืนยันเพื่อส่งข้อมูลการจองได้เลย</div>
     </div>
 
     <div id="payBlock">
@@ -282,22 +276,21 @@
     <div class="error-msg" id="payErr">กรุณาเลือกช่องทางชำระเงิน</div>
     <div class="wizard-actions">
       <button class="btn-ghost" onclick="goStep(3)">ย้อนกลับ</button>
-      <button class="btn-primary" id="payBtn" onclick="doPayment()">ยืนยันการชำระเงิน</button>
+      <button class="btn-primary" id="payBtn" onclick="doConfirm()">ยืนยันและส่งข้อมูลการจอง</button>
+    </div>
+
+    <div class="setup-note" id="setupNote" style="display:none;">
+      <b>หมายเหตุสำหรับเจ้าของเว็บ:</b> ยังไม่ได้ตั้งค่าระบบส่งอีเมลอัตโนมัติ (EmailJS) — ใส่ค่า <code>SERVICE_ID</code>, <code>TEMPLATE_ID</code>, <code>PUBLIC_KEY</code> ในไฟล์นี้ก่อน ปุ่มยืนยันจึงจะส่งอีเมลได้จริง
     </div>
   </div>
 
   <!-- STEP 5: done -->
   <div class="step-panel" data-step="5">
-    <div class="section-head"><span class="idx">05</span><h2>จองสำเร็จ</h2></div>
-    <div class="done-badge">✓</div>
+    <div class="section-head"><span class="idx">05</span><h2 id="doneTitle">จองสำเร็จ</h2></div>
+    <div class="done-badge" id="doneBadge">✓</div>
     <p class="hero-sub" id="doneMsg" style="margin-bottom:22px;"></p>
     <div class="wizard-actions"><button class="btn-primary" onclick="resetWizard()">จองคิวเพิ่ม</button></div>
   </div>
-</section>
-
-<section>
-  <div class="section-head"><span class="idx">•</span><h2>คิวของฉัน</h2><p id="myCount"></p></div>
-  <div class="booking-list" id="myBookings"></div>
 </section>
 
 <footer>
@@ -312,6 +305,32 @@
 <div class="toast" id="toast"></div>
 
 <script>
+/* ===================== EMAILJS CONFIG =====================
+   1) สมัครที่ https://www.emailjs.com (ฟรี)
+   2) Email Services -> Add New Service -> เลือก Gmail -> ล็อกอิน Gmail
+      แล้วนำ Service ID มาใส่ด้านล่าง
+   3) Email Templates -> Create New Template
+      ใช้ตัวแปรเหล่านี้ในเทมเพลต (ชื่อต้องตรงกัน):
+        {{customer_name}} {{customer_phone}} {{customer_email}}
+        {{booking_date}} {{booking_time}} {{duration_hours}}
+        {{price_total}} {{discount_used}} {{payment_method}}
+      ตั้งค่า "To Email" ของเทมเพลตเป็น nsirana.pikulkaew@gmail.com
+      แล้วนำ Template ID มาใส่ด้านล่าง
+   4) Account -> General -> คัดลอก Public Key มาใส่ด้านล่าง
+   ============================================================ */
+const EMAILJS_SERVICE_ID = 'service_t2tgcub';
+const EMAILJS_TEMPLATE_ID = 'template_fjw4nfx';
+const EMAILJS_PUBLIC_KEY  = 'PLZzFLuOnB22sXcNO';
+const OWNER_EMAIL = 'nsirana.pikulkaew@gmail.com';
+
+const emailConfigured = ![EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, EMAILJS_PUBLIC_KEY].includes('YOUR_SERVICE_ID')
+  && ![EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, EMAILJS_PUBLIC_KEY].includes('YOUR_TEMPLATE_ID')
+  && ![EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, EMAILJS_PUBLIC_KEY].includes('YOUR_PUBLIC_KEY');
+
+if(window.emailjs && emailConfigured){
+  emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+}
+
 const THAI_DOW = ['อา','จ','อ','พ','พฤ','ศ','ส'];
 const THAI_MON = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 const STEP_LABELS = ['วันที่','เวลา','ข้อมูล','ชำระเงิน','เสร็จสิ้น'];
@@ -328,41 +347,15 @@ const PAY_METHODS = [
 let days = [];
 let selectedDay = 0;
 let startTime = 10, endTime = 12;
-let bookingsByDate = {};   // { dateStr: [ {id,start,end,name,phone,price,discount,method,bookedAt} ] }
-let myIds = [];            // personal: [{date,id}]
 let currentStep = 1;
 let discountApplied = false;
 let selectedMethod = null;
-let currentBookingId = null;
-
-// Falls back to an in-memory store if window.storage isn't available in this
-// environment, so booking never silently fails — it just won't persist across reloads.
-let memoryStore = {};
-const storageAPI = {
-  async get(key, shared){
-    if(window.storage) return window.storage.get(key, shared);
-    const k = (shared ? 'shared:' : 'local:') + key;
-    if(!(k in memoryStore)) throw new Error('key not found: ' + key);
-    return { key, value: memoryStore[k], shared };
-  },
-  async set(key, value, shared){
-    if(window.storage) return window.storage.set(key, value, shared);
-    const k = (shared ? 'shared:' : 'local:') + key;
-    memoryStore[k] = value;
-    return { key, value, shared };
-  },
-  async delete(key, shared){
-    if(window.storage) return window.storage.delete(key, shared);
-    const k = (shared ? 'shared:' : 'local:') + key;
-    delete memoryStore[k];
-    return { key, deleted:true, shared };
-  }
-};
 
 function pad(n){ return n<10 ? '0'+n : ''+n; }
 function fmtDate(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
 function fmtTime(t){ const h = Math.floor(t); const m = Math.round((t-h)*60); return pad(h)+':'+pad(m); }
 function money(n){ return n.toLocaleString('th-TH'); }
+function isValidEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
 
 function buildDays(){
   const today = new Date();
@@ -399,40 +392,22 @@ function renderDayTabs(){
     const el = document.createElement('div');
     el.className = 'day-tab' + (i===selectedDay ? ' active' : '');
     el.innerHTML = `<div class="dow">${THAI_DOW[d.getDay()]}</div><div class="dom">${d.getDate()}</div><div class="mon">${THAI_MON[d.getMonth()]}</div>`;
-    el.onclick = () => { selectedDay = i; renderDayTabs(); renderTimeline(); };
+    el.onclick = () => { selectedDay = i; renderDayTabs(); };
     wrap.appendChild(el);
   });
   document.getElementById('monthLabel').textContent = 'วันนี้ ' + fmtDate(days[0]);
-}
-
-function getBlockedRanges(){
-  const dateStr = fmtDate(days[selectedDay]);
-  const list = bookingsByDate[dateStr] || [];
-  const mine = new Set(myIds.filter(m=>m.date===dateStr).map(m=>m.id));
-  return list.filter(b => !mine.has(b.id)).map(b => [b.start, b.end]);
-}
-
-function overlapsBlocked(s,e){
-  return getBlockedRanges().some(([bs,be]) => s < be && e > bs);
 }
 
 function pctOf(t){ return (t-T_MIN)/(T_MAX-T_MIN)*100; }
 
 function renderTimeline(){
   const tl = document.getElementById('timeline');
-  // clear old ticks/blocked
-  tl.querySelectorAll('.tick, .blocked').forEach(n => n.remove());
+  tl.querySelectorAll('.tick').forEach(n => n.remove());
   for(let h=T_MIN; h<=T_MAX; h+=2){
     const tick = document.createElement('div');
     tick.className='tick'; tick.style.left = pctOf(h)+'%'; tick.textContent = h+':00';
     tl.appendChild(tick);
   }
-  getBlockedRanges().forEach(([bs,be]) => {
-    const seg = document.createElement('div');
-    seg.className='blocked';
-    seg.style.left = pctOf(bs)+'%'; seg.style.width = (pctOf(be)-pctOf(bs))+'%';
-    tl.appendChild(seg);
-  });
   updateTimelineVisuals();
 }
 
@@ -451,10 +426,6 @@ function updateTimelineVisuals(){
   document.getElementById('dEnd').textContent = fmtTime(endTime);
   document.getElementById('dHours').textContent = dur + ' ชม.';
   document.getElementById('dPrice').textContent = money(dur*RATE_PER_HOUR)+' ฿';
-
-  const overlap = overlapsBlocked(startTime, endTime);
-  document.getElementById('overlapWarn').classList.toggle('show', overlap);
-  document.getElementById('toStep3').disabled = overlap;
 }
 
 function setupDrag(handleEl, isStart){
@@ -524,7 +495,8 @@ function applyCode(){
 function toPayment(){
   const name = document.getElementById('inName').value.trim();
   const phone = document.getElementById('inPhone').value.trim();
-  if(!name || !phone){ document.getElementById('errMsg').style.display='block'; return; }
+  const email = document.getElementById('inEmail').value.trim();
+  if(!name || !phone || !isValidEmail(email)){ document.getElementById('errMsg').style.display='block'; return; }
   document.getElementById('errMsg').style.display='none';
   goStep(4);
 }
@@ -535,7 +507,8 @@ function renderStep4(){
   const isFree = total === 0;
   document.getElementById('freeBlock').style.display = isFree ? 'block' : 'none';
   document.getElementById('payBlock').style.display = isFree ? 'none' : 'block';
-  document.getElementById('payBtn').textContent = isFree ? 'ยืนยันการจอง' : 'ยืนยันการชำระเงิน';
+  document.getElementById('payBtn').textContent = isFree ? 'ยืนยันและส่งข้อมูลการจอง' : 'ยืนยันและส่งข้อมูลการจอง';
+  document.getElementById('setupNote').style.display = emailConfigured ? 'none' : 'block';
 
   if(!isFree){
     const wrap = document.getElementById('payMethods');
@@ -551,9 +524,9 @@ function renderStep4(){
     if(selectedMethod){
       const m = PAY_METHODS.find(x=>x.id===selectedMethod);
       let text = '';
-      if(m.id==='promptpay') text = 'สแกน QR พร้อมเพย์ผ่านแอปธนาคารของคุณ แล้วกด "ยืนยันการชำระเงิน" เมื่อทำรายการเสร็จ';
-      if(m.id==='transfer') text = 'โอนเงินเข้าบัญชี SIRANA PIKULKAEW แล้วกด "ยืนยันการชำระเงิน" เมื่อโอนเสร็จ';
-      if(m.id==='card') text = 'คุณจะถูกนำไปยังหน้าชำระเงินที่ปลอดภัยเพื่อกรอกข้อมูลบัตร';
+      if(m.id==='promptpay') text = 'สแกน QR พร้อมเพย์ผ่านแอปธนาคารของคุณ แล้วกด "ยืนยัน" — ช่างภาพจะตรวจสลิปและติดต่อกลับทางอีเมลที่กรอกไว้';
+      if(m.id==='transfer') text = 'โอนเงินเข้าบัญชี SIRANA PIKULKAEW แล้วกด "ยืนยัน" — ช่างภาพจะตรวจสลิปและติดต่อกลับทางอีเมลที่กรอกไว้';
+      if(m.id==='card') text = 'ระบบชำระบัตรจะเชื่อมเพิ่มภายหลัง ระหว่างนี้กด "ยืนยัน" เพื่อส่งคำขอจอง แล้วช่างภาพจะติดต่อกลับเพื่อรับชำระเงิน';
       detail.textContent = text;
       detail.classList.add('show');
     } else { detail.classList.remove('show'); }
@@ -561,52 +534,52 @@ function renderStep4(){
   document.getElementById('payErr').style.display = 'none';
 }
 
-async function doPayment(){
+async function doConfirm(){
   const { total } = computePrice();
   const isFree = total === 0;
   if(!isFree && !selectedMethod){ document.getElementById('payErr').style.display='block'; return; }
 
+  if(!emailConfigured){
+    showToast('ยังไม่ได้ตั้งค่า EmailJS — ดูคำแนะนำด้านล่างปุ่มยืนยัน');
+    return;
+  }
+
   const btn = document.getElementById('payBtn');
   const original = btn.textContent;
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>กำลังดำเนินการ...';
+  btn.innerHTML = '<span class="spinner"></span>กำลังส่งอีเมล...';
 
-  await new Promise(r => setTimeout(r, isFree ? 300 : 900));
-
-  await saveBooking();
-
-  btn.disabled = false;
-  btn.textContent = original;
-}
-
-async function saveBooking(){
-  const name = document.getElementById('inName').value.trim();
-  const phone = document.getElementById('inPhone').value.trim();
   const d = days[selectedDay];
-  const dateStr = fmtDate(d);
-  const { total } = computePrice();
-  const id = dateStr + '_' + Date.now() + '_' + Math.floor(Math.random()*1000);
-  const entry = {
-    id, start: startTime, end: endTime, name, phone,
-    price: total, discount: discountApplied, method: discountApplied ? null : selectedMethod,
-    bookedAt: new Date().toISOString()
-  };
-  try{
-    const list = bookingsByDate[dateStr] ? bookingsByDate[dateStr].slice() : [];
-    list.push(entry);
-    bookingsByDate[dateStr] = list;
-    await storageAPI.set('bk_'+dateStr, JSON.stringify(list), true);
-    myIds.push({ date: dateStr, id });
-    await storageAPI.set('my-booking-ids', JSON.stringify(myIds), false);
+  const methodLabel = selectedMethod ? (PAY_METHODS.find(m=>m.id===selectedMethod)||{}).name : '-';
 
+  const params = {
+    customer_name: document.getElementById('inName').value.trim(),
+    customer_phone: document.getElementById('inPhone').value.trim(),
+    customer_email: document.getElementById('inEmail').value.trim(),
+    booking_date: `${THAI_DOW[d.getDay()]}ที่ ${d.getDate()} ${THAI_MON[d.getMonth()]}`,
+    booking_time: `${fmtTime(startTime)} - ${fmtTime(endTime)} น.`,
+    duration_hours: (endTime-startTime) + ' ชม.',
+    price_total: isFree ? '0 บาท (ใช้โค้ดส่วนลด)' : money(total) + ' บาท',
+    discount_used: discountApplied ? DISCOUNT_CODE : '-',
+    payment_method: isFree ? '-' : methodLabel,
+    to_email: OWNER_EMAIL,
+  };
+
+  try{
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
+    document.getElementById('doneBadge').className = 'done-badge';
+    document.getElementById('doneBadge').textContent = '✓';
+    document.getElementById('doneTitle').textContent = 'ส่งข้อมูลการจองแล้ว';
     document.getElementById('doneMsg').textContent =
-      `จองคิวถ่ายภาพวัน${THAI_DOW[d.getDay()]}ที่ ${d.getDate()} ${THAI_MON[d.getMonth()]} เวลา ${fmtTime(startTime)}-${fmtTime(endTime)} น. เรียบร้อยแล้ว`;
-    renderMyBookings();
+      `ส่งคำขอจองวัน${params.booking_date} เวลา ${params.booking_time} เข้าอีเมลของช่างภาพเรียบร้อย ช่างภาพจะติดต่อกลับผ่าน ${params.customer_email} เพื่อยืนยันคิว`;
     goStep(5);
-    showToast(total===0 ? 'จองคิวสำเร็จแล้ว (ฟรี) ✓' : 'ชำระเงินสำเร็จ จองคิวเรียบร้อย ✓');
+    showToast('ส่งอีเมลจองคิวสำเร็จ ✓');
   }catch(e){
-    console.error('saveBooking failed:', e);
-    showToast('เกิดข้อผิดพลาด: ' + (e && e.message ? e.message : 'กรุณาลองใหม่'));
+    console.error('emailjs send failed:', e);
+    showToast('ส่งอีเมลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = original;
   }
 }
 
@@ -615,6 +588,7 @@ function resetWizard(){
   discountApplied = false; selectedMethod = null;
   document.getElementById('inName').value = '';
   document.getElementById('inPhone').value = '';
+  document.getElementById('inEmail').value = '';
   document.getElementById('inCode').value = '';
   document.getElementById('codeMsg').className = 'discount-msg';
   document.getElementById('codeMsg').textContent = '';
@@ -622,82 +596,24 @@ function resetWizard(){
   goStep(1);
 }
 
-function renderMyBookings(){
-  const wrap = document.getElementById('myBookings');
-  const mine = myIds
-    .map(m => { const b = (bookingsByDate[m.date]||[]).find(x=>x.id===m.id); return b ? {...b, date:m.date} : null; })
-    .filter(Boolean)
-    .sort((a,b) => (a.date+a.start) < (b.date+b.start) ? -1 : 1);
-  document.getElementById('myCount').textContent = mine.length + ' คิว';
-  if(mine.length===0){ wrap.innerHTML = '<div class="empty-note">ยังไม่มีคิวที่จอง — เลือกวันและเวลาด้านบนเพื่อเริ่มจอง</div>'; return; }
-  wrap.innerHTML = '';
-  mine.forEach(b => {
-    const d = new Date(b.date);
-    const el = document.createElement('div');
-    el.className = 'booking-card';
-    el.innerHTML = `
-      <div class="stub">${THAI_DOW[d.getDay()]} ${d.getDate()} ${THAI_MON[d.getMonth()]}<div class="tt">${fmtTime(b.start)}-${fmtTime(b.end)}</div></div>
-      <div class="info">
-        <div class="nm">${b.name}</div>
-        <div class="ph">${b.phone}</div>
-        <div class="pr">${b.price===0 ? 'ฟรี (ใช้โค้ดส่วนลด)' : 'ชำระแล้ว ' + money(b.price) + ' ฿'}</div>
-      </div>
-      <button class="cancel-btn" onclick="cancelBooking('${b.date}','${b.id}')">ยกเลิก</button>
-    `;
-    wrap.appendChild(el);
-  });
-}
-
-async function cancelBooking(dateStr, id){
-  try{
-    const list = (bookingsByDate[dateStr]||[]).filter(b => b.id !== id);
-    bookingsByDate[dateStr] = list;
-    await storageAPI.set('bk_'+dateStr, JSON.stringify(list), true);
-    myIds = myIds.filter(m => !(m.date===dateStr && m.id===id));
-    await storageAPI.set('my-booking-ids', JSON.stringify(myIds), false);
-    renderMyBookings();
-    renderTimeline();
-    showToast('ยกเลิกคิวเรียบร้อย');
-  }catch(e){
-    console.error('cancelBooking failed:', e);
-    showToast('ยกเลิกไม่สำเร็จ: ' + (e && e.message ? e.message : 'กรุณาลองใหม่'));
-  }
-}
-
 let toastTimer;
 function showToast(msg){
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
 }
 
-async function loadAll(){
+function init(){
   buildDays();
   renderProgress();
   renderDayTabs();
   setupDrag(document.getElementById('startHandle'), true);
   setupDrag(document.getElementById('endHandle'), false);
-
-  try{
-    const mine = await storageAPI.get('my-booking-ids', false);
-    myIds = mine ? JSON.parse(mine.value) : [];
-  }catch(e){ myIds = []; }
-
-  bookingsByDate = {};
-  for(const d of days){
-    const dateStr = fmtDate(d);
-    try{
-      const r = await storageAPI.get('bk_'+dateStr, true);
-      if(r) bookingsByDate[dateStr] = JSON.parse(r.value);
-    }catch(e){ /* no bookings that day */ }
-  }
-
   renderTimeline();
-  renderMyBookings();
 }
 
-loadAll();
+init();
 </script>
 </body>
 </html>
