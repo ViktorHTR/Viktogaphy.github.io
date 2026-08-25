@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>จองคิวถ่ายภาพ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,400;0,600;0,700;0,800;1,800;1,900&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0b0a0c;
+    --panel: #171216;
+    --panel-2: #201519;
+    --red: #d81b3f;
+    --red-deep: #6e0f21;
+    --red-glow: #ff2d55;
+    --white: #f4efe9;
+    --grey: #8f8489;
+    --line: #33262b;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--bg); color:var(--white); font-family:'IBM Plex Sans Thai', sans-serif; overflow-x:hidden;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 85% -10%, rgba(216,27,63,0.20), transparent 60%),
+      radial-gradient(ellipse 700px 400px at -10% 30%, rgba(110,15,33,0.25), transparent 60%),
+      var(--bg);
+    min-height:100vh;
+  }
+  .display{ font-family:'Prompt', sans-serif; font-weight:800; font-style:italic; letter-spacing:-0.01em; }
+  .num{ font-family:'Bebas Neue', sans-serif; letter-spacing:0.01em; }
+
+  /* diagonal stripe motif, echoing the reference poster corner */
+  .stripes{
+    position:fixed; top:0; right:0; width:240px; height:240px; pointer-events:none; z-index:0; opacity:.5;
+    background-image: repeating-linear-gradient(115deg, var(--red) 0 10px, transparent 10px 22px);
+    -webkit-mask-image: radial-gradient(circle at 100% 0%, black 55%, transparent 75%);
+    mask-image: radial-gradient(circle at 100% 0%, black 55%, transparent 75%);
+  }
+  .dots{
+    position:fixed; top:60px; right:120px; width:160px; height:160px; pointer-events:none; z-index:0; opacity:.35;
+    background-image: radial-gradient(var(--red-deep) 2px, transparent 2px);
+    background-size: 16px 16px;
+  }
+
+  header.hero{
+    position:relative; z-index:1;
+    padding: 56px 24px 40px;
+    max-width: 1080px; margin:0 auto;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:13px; letter-spacing:0.14em; color:var(--red-glow);
+    text-transform:uppercase; font-weight:600;
+  }
+  .eyebrow::before{content:''; width:18px; height:2px; background:var(--red-glow); display:inline-block;}
+  h1.hero-title{
+    font-size: clamp(34px, 7vw, 64px);
+    line-height:1.02;
+    margin-top:14px;
+    text-transform:uppercase;
+    background: linear-gradient(180deg, #ffffff 0%, #d9cfd2 60%, #a89297 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    text-shadow: 0 2px 30px rgba(216,27,63,0.25);
+  }
+  .hero-title .accent{
+    background: linear-gradient(180deg, var(--red-glow), var(--red-deep));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero-sub{ margin-top:16px; color:var(--grey); font-size:16px; max-width:520px; line-height:1.7; }
+
+  .price-tag{
+    position:absolute; top:40px; right:24px;
+    background: linear-gradient(135deg, var(--red-deep), var(--red));
+    padding:14px 22px 16px; border-radius:6px;
+    transform: rotate(3deg);
+    box-shadow: 0 14px 34px rgba(216,27,63,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+  }
+  .price-tag::after{
+    content:''; position:absolute; left:-9px; top:50%; transform:translateY(-50%);
+    border:9px solid transparent; border-right-color:var(--red-deep);
+  }
+  .price-tag .p-label{ font-size:11px; letter-spacing:0.1em; text-transform:uppercase; opacity:.85;}
+  .price-tag .p-value{ font-family:'Bebas Neue'; font-size:40px; line-height:1; color:#fff; }
+  .price-tag .p-unit{ font-size:16px; }
+  @media (max-width: 640px){ .price-tag{ position:static; display:inline-block; margin-top:22px; transform:rotate(-1.5deg);} }
+
+  section{ position:relative; z-index:1; max-width:1080px; margin:0 auto; padding: 20px 24px 60px; }
+  .section-head{ display:flex; align-items:baseline; gap:12px; margin-bottom:22px; }
+  .section-head .idx{ font-family:'Bebas Neue'; color:var(--red-glow); font-size:22px; }
+  .section-head h2{ font-family:'Prompt'; font-weight:700; font-size:22px; text-transform:uppercase; letter-spacing:0.01em; }
+  .section-head p{ color:var(--grey); font-size:13.5px; margin-left:auto; text-align:right; }
+
+  /* day tabs - filmstrip style */
+  .day-tabs{
+    display:flex; gap:10px; overflow-x:auto; padding-bottom:14px; margin-bottom:8px;
+    scrollbar-width:thin; scrollbar-color: var(--red-deep) transparent;
+  }
+  .day-tab{
+    flex:0 0 auto; cursor:pointer; user-select:none;
+    background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    padding:12px 16px; text-align:center; min-width:76px;
+    transition: border-color .15s, background .15s, transform .15s;
+  }
+  .day-tab .dow{ font-size:11px; color:var(--grey); text-transform:uppercase; letter-spacing:.06em;}
+  .day-tab .dom{ font-family:'Bebas Neue'; font-size:26px; margin-top:2px; }
+  .day-tab .mon{ font-size:10.5px; color:var(--grey); }
+  .day-tab.active{ background: linear-gradient(160deg, var(--red-deep), #3a0a15); border-color: var(--red); transform: translateY(-2px); box-shadow:0 8px 20px rgba(216,27,63,.25); }
+  .day-tab.active .dow, .day-tab.active .mon{ color:#e9c7cf; }
+
+  .slots{ display:grid; grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); gap:12px; }
+  .slot{
+    position:relative; border-radius:10px; padding:14px 12px; text-align:center;
+    border:1px solid var(--line); background:var(--panel); cursor:pointer;
+    transition: transform .12s, border-color .12s, background .12s;
+  }
+  .slot .t{ font-family:'Bebas Neue'; font-size:22px; }
+  .slot .s{ font-size:11px; color:var(--grey); margin-top:4px; display:block; }
+  .slot:hover:not(.booked):not(.mine){ border-color:var(--red); transform:translateY(-2px); }
+  .slot.booked{ opacity:.4; cursor:not-allowed; }
+  .slot.booked .s{ color:#c5747f; }
+  .slot.mine{ background: linear-gradient(160deg, var(--red), var(--red-deep)); border-color:var(--red-glow); cursor:pointer; }
+  .slot.mine .s{ color:#ffd9de; }
+  /* film perforation dots on the slot card top/bottom */
+  .slot::before, .slot::after{
+    content:''; position:absolute; left:10px; right:10px; height:1px;
+    background-image: radial-gradient(circle, var(--line) 1.4px, transparent 1.4px);
+    background-size: 8px 100%;
+  }
+  .slot::before{ top:4px; } .slot::after{ bottom:4px; }
+
+  .empty-note{ color:var(--grey); font-size:13.5px; padding:18px 4px; }
+
+  /* my bookings */
+  .booking-list{ display:flex; flex-direction:column; gap:10px; }
+  .booking-card{
+    display:flex; align-items:center; gap:16px;
+    background:var(--panel); border:1px solid var(--line); border-radius:12px;
+    padding:14px 16px;
+  }
+  .booking-card .stub{
+    font-family:'Bebas Neue'; font-size:15px; color:var(--red-glow);
+    border-right:1px dashed var(--line); padding-right:16px; min-width:96px; text-align:center;
+  }
+  .booking-card .stub .tt{ font-size:24px; color:#fff; }
+  .booking-card .info{ flex:1; }
+  .booking-card .info .nm{ font-weight:600; font-size:14.5px; }
+  .booking-card .info .ph{ font-size:12.5px; color:var(--grey); margin-top:2px; }
+  .cancel-btn{
+    border:1px solid var(--red); color:var(--red-glow); background:transparent;
+    padding:8px 14px; border-radius:8px; font-size:13px; cursor:pointer;
+    font-family:'IBM Plex Sans Thai'; transition: background .15s, color .15s;
+  }
+  .cancel-btn:hover{ background:var(--red); color:#fff; }
+
+  /* modal */
+  .overlay{
+    position:fixed; inset:0; background:rgba(6,4,5,0.7); backdrop-filter: blur(3px);
+    display:none; align-items:center; justify-content:center; z-index:50; padding:20px;
+  }
+  .overlay.show{ display:flex; }
+  .modal{
+    background: linear-gradient(180deg, var(--panel-2), var(--panel));
+    border:1px solid var(--line); border-radius:16px; padding:26px; width:100%; max-width:380px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+  }
+  .modal h3{ font-family:'Prompt'; font-weight:700; font-size:19px; margin-bottom:4px; }
+  .modal .sub{ color:var(--grey); font-size:13px; margin-bottom:18px; }
+  .field{ margin-bottom:14px; }
+  .field label{ font-size:12.5px; color:var(--grey); display:block; margin-bottom:6px; }
+  .field input{
+    width:100%; background:#0f0a0c; border:1px solid var(--line); border-radius:8px;
+    padding:10px 12px; color:var(--white); font-family:'IBM Plex Sans Thai'; font-size:14px;
+  }
+  .field input:focus{ outline:none; border-color:var(--red); }
+  .modal-actions{ display:flex; gap:10px; margin-top:18px; }
+  .btn-primary{
+    flex:1; background: linear-gradient(135deg, var(--red-glow), var(--red-deep));
+    border:none; color:#fff; padding:11px; border-radius:9px; font-weight:600;
+    font-family:'IBM Plex Sans Thai'; cursor:pointer; font-size:14px;
+  }
+  .btn-ghost{
+    background:transparent; border:1px solid var(--line); color:var(--grey);
+    padding:11px 16px; border-radius:9px; cursor:pointer; font-family:'IBM Plex Sans Thai'; font-size:14px;
+  }
+  .error-msg{ color:var(--red-glow); font-size:12.5px; margin-top:-6px; margin-bottom:10px; display:none; }
+
+  .toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--panel); border:1px solid var(--red); color:#fff; padding:12px 20px;
+    border-radius:10px; font-size:13.5px; opacity:0; pointer-events:none; transition: all .25s; z-index:60;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  footer{
+    position:relative; z-index:1; border-top:1px solid var(--line); margin-top:20px;
+    padding:26px 24px 40px; max-width:1080px; margin-left:auto; margin-right:auto;
+    display:flex; flex-wrap:wrap; gap:18px 32px; align-items:center; justify-content:space-between;
+  }
+  .brand{ font-family:'Prompt'; font-weight:800; font-style:italic; font-size:15px; }
+  .brand span{ color:var(--red-glow); }
+  .contacts{ display:flex; flex-wrap:wrap; gap:18px; font-size:13px; color:var(--grey); }
+  .contacts b{ color:var(--white); font-weight:500; }
+
+  ::-webkit-scrollbar{ height:6px; }
+  ::-webkit-scrollbar-thumb{ background:var(--red-deep); border-radius:4px; }
+</style>
+</head>
+<body>
+
+<div class="stripes"></div>
+<div class="dots"></div>
+
+<header class="hero">
+  <span class="eyebrow">Photography Booking</span>
+  <h1 class="hero-title">จองคิว<br><span class="accent">ถ่ายภาพ</span> ออนไลน์</h1>
+  <p class="hero-sub">เลือกวันและเวลาที่ว่าง ยืนยันการจองได้ทันที และยกเลิกได้ตลอดเวลาก่อนถึงคิวของคุณ ไม่มีค่าธรรมเนียม</p>
+  <div class="price-tag">
+    <div class="p-label">เริ่มต้นเพียง</div>
+    <div class="p-value">300<span class="p-unit">.-</span></div>
+  </div>
+</header>
+
+<section>
+  <div class="section-head">
+    <span class="idx">01</span>
+    <h2>เลือกวันที่</h2>
+    <p id="monthLabel"></p>
+  </div>
+  <div class="day-tabs" id="dayTabs"></div>
+
+  <div class="section-head" style="margin-top:26px;">
+    <span class="idx">02</span>
+    <h2>เลือกรอบเวลา</h2>
+    <p>สีแดง = คิวของคุณ · จาง = เต็มแล้ว</p>
+  </div>
+  <div class="slots" id="slots"></div>
+</section>
+
+<section>
+  <div class="section-head">
+    <span class="idx">03</span>
+    <h2>คิวของฉัน</h2>
+    <p id="myCount"></p>
+  </div>
+  <div class="booking-list" id="myBookings"></div>
+</section>
+
+<footer>
+  <div class="brand">SIRANA <span>PIKULKAEW</span> — Photography</div>
+  <div class="contacts">
+    <span><b>Line</b> @sr.pk.viktor</span>
+    <span><b>Email</b> nsirana.pikulkaew@gmail.com</span>
+    <span><b>โทร</b> 062-178-2195</span>
+  </div>
+</footer>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3>ยืนยันการจอง</h3>
+    <div class="sub" id="modalSub"></div>
+    <div class="field">
+      <label>ชื่อผู้จอง</label>
+      <input id="inName" type="text" placeholder="ชื่อ-นามสกุล" />
+    </div>
+    <div class="field">
+      <label>เบอร์โทรศัพท์</label>
+      <input id="inPhone" type="tel" placeholder="08x-xxx-xxxx" />
+    </div>
+    <div class="error-msg" id="errMsg">กรุณากรอกชื่อและเบอร์โทรให้ครบถ้วน</div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal()">ยกเลิก</button>
+      <button class="btn-primary" onclick="confirmBooking()">ยืนยันจอง</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const TIMES = ['10:00','12:00','14:00','16:00','18:00'];
+const THAI_DOW = ['อา','จ','อ','พ','พฤ','ศ','ส'];
+const THAI_MON = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+
+let days = [];
+let selectedDay = 0;
+let slotsData = {};   // shared: all booked slots {slotKey: {name, phone, bookedAt}}
+let myIds = [];        // personal: slotKeys that belong to this browser
+let pendingSlotKey = null;
+
+function pad(n){ return n<10 ? '0'+n : ''+n; }
+function fmtDate(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function slotKey(dateStr, time){ return dateStr+'_'+time; }
+
+function buildDays(){
+  const today = new Date();
+  days = [];
+  for(let i=0;i<10;i++){
+    const d = new Date(today);
+    d.setDate(today.getDate()+i);
+    days.push(d);
+  }
+}
+
+function renderDayTabs(){
+  const wrap = document.getElementById('dayTabs');
+  wrap.innerHTML = '';
+  days.forEach((d, i) => {
+    const el = document.createElement('div');
+    el.className = 'day-tab' + (i===selectedDay ? ' active' : '');
+    el.innerHTML = `<div class="dow">${THAI_DOW[d.getDay()]}</div><div class="dom">${d.getDate()}</div><div class="mon">${THAI_MON[d.getMonth()]}</div>`;
+    el.onclick = () => { selectedDay = i; renderDayTabs(); renderSlots(); };
+    wrap.appendChild(el);
+  });
+  document.getElementById('monthLabel').textContent = 'วันนี้ ' + fmtDate(days[0]);
+}
+
+function renderSlots(){
+  const wrap = document.getElementById('slots');
+  wrap.innerHTML = '';
+  const d = days[selectedDay];
+  const dateStr = fmtDate(d);
+  TIMES.forEach(t => {
+    const key = slotKey(dateStr, t);
+    const booked = !!slotsData[key];
+    const mine = myIds.includes(key);
+    const el = document.createElement('div');
+    el.className = 'slot' + (booked && !mine ? ' booked' : '') + (mine ? ' mine' : '');
+    el.innerHTML = `<div class="t">${t}</div><span class="s">${mine ? 'คิวของคุณ · แตะเพื่อยกเลิก' : (booked ? 'เต็มแล้ว' : 'ว่าง')}</span>`;
+    el.onclick = () => {
+      if(mine){ cancelBooking(key); }
+      else if(!booked){ openModal(key, dateStr, t); }
+    };
+    wrap.appendChild(el);
+  });
+}
+
+function renderMyBookings(){
+  const wrap = document.getElementById('myBookings');
+  const mine = myIds.filter(k => slotsData[k]).sort();
+  document.getElementById('myCount').textContent = mine.length + ' คิว';
+  if(mine.length === 0){
+    wrap.innerHTML = '<div class="empty-note">ยังไม่มีคิวที่จอง — เลือกวันและเวลาด้านบนเพื่อเริ่มจอง</div>';
+    return;
+  }
+  wrap.innerHTML = '';
+  mine.forEach(key => {
+    const [dateStr, time] = key.split('_');
+    const info = slotsData[key];
+    const d = new Date(dateStr);
+    const el = document.createElement('div');
+    el.className = 'booking-card';
+    el.innerHTML = `
+      <div class="stub">${THAI_DOW[d.getDay()]} ${d.getDate()} ${THAI_MON[d.getMonth()]}<div class="tt">${time}</div></div>
+      <div class="info">
+        <div class="nm">${info.name}</div>
+        <div class="ph">${info.phone}</div>
+      </div>
+      <button class="cancel-btn" onclick="cancelBooking('${key}')">ยกเลิก</button>
+    `;
+    wrap.appendChild(el);
+  });
+}
+
+function openModal(key, dateStr, time){
+  pendingSlotKey = key;
+  const d = new Date(dateStr);
+  document.getElementById('modalSub').textContent = `วัน${THAI_DOW[d.getDay()]}ที่ ${d.getDate()} ${THAI_MON[d.getMonth()]} เวลา ${time} น.`;
+  document.getElementById('inName').value = '';
+  document.getElementById('inPhone').value = '';
+  document.getElementById('errMsg').style.display = 'none';
+  document.getElementById('overlay').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('overlay').classList.remove('show');
+  pendingSlotKey = null;
+}
+
+async function confirmBooking(){
+  const name = document.getElementById('inName').value.trim();
+  const phone = document.getElementById('inPhone').value.trim();
+  if(!name || !phone){
+    document.getElementById('errMsg').style.display = 'block';
+    return;
+  }
+  const key = pendingSlotKey;
+  const entry = { name, phone, bookedAt: new Date().toISOString() };
+  try{
+    slotsData[key] = entry;
+    await window.storage.set(key, JSON.stringify(entry), true);
+    myIds.push(key);
+    await window.storage.set('my-booking-ids', JSON.stringify(myIds), false);
+    closeModal();
+    renderSlots();
+    renderMyBookings();
+    showToast('จองคิวสำเร็จแล้ว ✓');
+  }catch(e){
+    showToast('เกิดข้อผิดพลาด กรุณาลองใหม่');
+  }
+}
+
+async function cancelBooking(key){
+  try{
+    delete slotsData[key];
+    await window.storage.delete(key, true);
+    myIds = myIds.filter(k => k !== key);
+    await window.storage.set('my-booking-ids', JSON.stringify(myIds), false);
+    renderSlots();
+    renderMyBookings();
+    showToast('ยกเลิกคิวเรียบร้อย');
+  }catch(e){
+    showToast('ยกเลิกไม่สำเร็จ กรุณาลองใหม่');
+  }
+}
+
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+async function loadAll(){
+  buildDays();
+  renderDayTabs();
+
+  // load personal booking id list
+  try{
+    const mine = await window.storage.get('my-booking-ids', false);
+    myIds = mine ? JSON.parse(mine.value) : [];
+  }catch(e){ myIds = []; }
+
+  // load shared slot data for the visible date range
+  slotsData = {};
+  const keys = [];
+  days.forEach(d => TIMES.forEach(t => keys.push(slotKey(fmtDate(d), t))));
+  for(const k of keys){
+    try{
+      const r = await window.storage.get(k, true);
+      if(r) slotsData[k] = JSON.parse(r.value);
+    }catch(e){ /* not booked */ }
+  }
+
+  renderSlots();
+  renderMyBookings();
+}
+
+loadAll();
+</script>
+</body>
+</html>
