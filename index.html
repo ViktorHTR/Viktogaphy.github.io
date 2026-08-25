@@ -335,6 +335,30 @@ let discountApplied = false;
 let selectedMethod = null;
 let currentBookingId = null;
 
+// Falls back to an in-memory store if window.storage isn't available in this
+// environment, so booking never silently fails — it just won't persist across reloads.
+let memoryStore = {};
+const storageAPI = {
+  async get(key, shared){
+    if(window.storage) return window.storage.get(key, shared);
+    const k = (shared ? 'shared:' : 'local:') + key;
+    if(!(k in memoryStore)) throw new Error('key not found: ' + key);
+    return { key, value: memoryStore[k], shared };
+  },
+  async set(key, value, shared){
+    if(window.storage) return window.storage.set(key, value, shared);
+    const k = (shared ? 'shared:' : 'local:') + key;
+    memoryStore[k] = value;
+    return { key, value, shared };
+  },
+  async delete(key, shared){
+    if(window.storage) return window.storage.delete(key, shared);
+    const k = (shared ? 'shared:' : 'local:') + key;
+    delete memoryStore[k];
+    return { key, deleted:true, shared };
+  }
+};
+
 function pad(n){ return n<10 ? '0'+n : ''+n; }
 function fmtDate(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
 function fmtTime(t){ const h = Math.floor(t); const m = Math.round((t-h)*60); return pad(h)+':'+pad(m); }
@@ -571,9 +595,9 @@ async function saveBooking(){
     const list = bookingsByDate[dateStr] ? bookingsByDate[dateStr].slice() : [];
     list.push(entry);
     bookingsByDate[dateStr] = list;
-    await window.storage.set('bk_'+dateStr, JSON.stringify(list), true);
+    await storageAPI.set('bk_'+dateStr, JSON.stringify(list), true);
     myIds.push({ date: dateStr, id });
-    await window.storage.set('my-booking-ids', JSON.stringify(myIds), false);
+    await storageAPI.set('my-booking-ids', JSON.stringify(myIds), false);
 
     document.getElementById('doneMsg').textContent =
       `จองคิวถ่ายภาพวัน${THAI_DOW[d.getDay()]}ที่ ${d.getDate()} ${THAI_MON[d.getMonth()]} เวลา ${fmtTime(startTime)}-${fmtTime(endTime)} น. เรียบร้อยแล้ว`;
@@ -581,7 +605,8 @@ async function saveBooking(){
     goStep(5);
     showToast(total===0 ? 'จองคิวสำเร็จแล้ว (ฟรี) ✓' : 'ชำระเงินสำเร็จ จองคิวเรียบร้อย ✓');
   }catch(e){
-    showToast('เกิดข้อผิดพลาด กรุณาลองใหม่');
+    console.error('saveBooking failed:', e);
+    showToast('เกิดข้อผิดพลาด: ' + (e && e.message ? e.message : 'กรุณาลองใหม่'));
   }
 }
 
@@ -627,14 +652,15 @@ async function cancelBooking(dateStr, id){
   try{
     const list = (bookingsByDate[dateStr]||[]).filter(b => b.id !== id);
     bookingsByDate[dateStr] = list;
-    await window.storage.set('bk_'+dateStr, JSON.stringify(list), true);
+    await storageAPI.set('bk_'+dateStr, JSON.stringify(list), true);
     myIds = myIds.filter(m => !(m.date===dateStr && m.id===id));
-    await window.storage.set('my-booking-ids', JSON.stringify(myIds), false);
+    await storageAPI.set('my-booking-ids', JSON.stringify(myIds), false);
     renderMyBookings();
     renderTimeline();
     showToast('ยกเลิกคิวเรียบร้อย');
   }catch(e){
-    showToast('ยกเลิกไม่สำเร็จ กรุณาลองใหม่');
+    console.error('cancelBooking failed:', e);
+    showToast('ยกเลิกไม่สำเร็จ: ' + (e && e.message ? e.message : 'กรุณาลองใหม่'));
   }
 }
 
@@ -654,7 +680,7 @@ async function loadAll(){
   setupDrag(document.getElementById('endHandle'), false);
 
   try{
-    const mine = await window.storage.get('my-booking-ids', false);
+    const mine = await storageAPI.get('my-booking-ids', false);
     myIds = mine ? JSON.parse(mine.value) : [];
   }catch(e){ myIds = []; }
 
@@ -662,7 +688,7 @@ async function loadAll(){
   for(const d of days){
     const dateStr = fmtDate(d);
     try{
-      const r = await window.storage.get('bk_'+dateStr, true);
+      const r = await storageAPI.get('bk_'+dateStr, true);
       if(r) bookingsByDate[dateStr] = JSON.parse(r.value);
     }catch(e){ /* no bookings that day */ }
   }
