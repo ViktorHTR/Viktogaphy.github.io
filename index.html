@@ -385,7 +385,7 @@ let days = [];
 let selectedDay = 0;
 let startTime = 10, endTime = 12;
 let currentStep = 1;
-let discountApplied = false;
+let discountPercent = 0;
 let selectedMethod = null;
 
 function pad(n){ return n<10 ? '0'+n : ''+n; }
@@ -491,8 +491,9 @@ function setupDrag(handleEl, isStart){
 function computePrice(){
   const dur = endTime - startTime;
   const subtotal = dur * RATE_PER_HOUR;
-  const total = discountApplied ? 0 : subtotal;
-  return { dur, subtotal, total };
+  const discountAmount = Math.round(subtotal * discountPercent);
+  const total = subtotal - discountAmount;
+  return { dur, subtotal, discountAmount, total };
 }
 
 function renderStep3(){
@@ -504,30 +505,31 @@ function renderStep3(){
 }
 
 function renderPriceRecap(targetId){
-  const { dur, subtotal, total } = computePrice();
+  const { dur, subtotal, discountAmount, total } = computePrice();
   let html = `<div class="pr-row"><span>ค่าถ่ายภาพ (${dur} ชม. x ${RATE_PER_HOUR}.-)</span><span>${money(subtotal)} ฿</span></div>`;
-  if(discountApplied){
-    html += `<div class="pr-row"><span>ส่วนลด (${DISCOUNT_CODE})</span><span>-${money(subtotal)} ฿</span></div>`;
+  if(discountPercent > 0){
+    html += `<div class="pr-row"><span>ส่วนลด (${Math.round(discountPercent*100)}%)</span><span>-${money(discountAmount)} ฿</span></div>`;
   }
-  html += `<div class="pr-row total"><span>ยอดชำระ</span><span>${discountApplied ? '<span class="strike">'+money(subtotal)+' ฿</span>' : ''}${money(total)} ฿</span></div>`;
+  html += `<div class="pr-row total"><span>ยอดชำระ</span><span>${discountPercent > 0 ? '<span class="strike">'+money(subtotal)+' ฿</span>' : ''}${money(total)} ฿</span></div>`;
   document.getElementById(targetId).innerHTML = html;
 }
-
 function applyCode(){
-  const val = document.getElementById('inCode').value.trim();
+  const val = document.getElementById('inCode').value.trim().toUpperCase();
   const msg = document.getElementById('codeMsg');
-  if(val.toUpperCase() === DISCOUNT_CODE.toUpperCase()){
-    discountApplied = true;
-    msg.textContent = 'ใช้โค้ดส่วนลดสำเร็จ — ยอดชำระเป็น 0 บาท';
+  if(DISCOUNT_CODES.hasOwnProperty(val)){
+    discountPercent = DISCOUNT_CODES[val];
+    const pct = Math.round(discountPercent * 100);
+    msg.textContent = pct === 100
+      ? 'ใช้โค้ดส่วนลดสำเร็จ — ยอดชำระเป็น 0 บาท'
+      : `ใช้โค้ดส่วนลดสำเร็จ — ลด ${pct}%`;
     msg.className = 'discount-msg ok';
   } else {
-    discountApplied = false;
+    discountPercent = 0; selectedMethod = null;
     msg.textContent = 'โค้ดไม่ถูกต้อง กรุณาลองใหม่';
     msg.className = 'discount-msg err';
   }
   renderPriceRecap('priceRecap3');
 }
-
 function toPayment(){
   const name = document.getElementById('inName').value.trim();
   const phone = document.getElementById('inPhone').value.trim();
