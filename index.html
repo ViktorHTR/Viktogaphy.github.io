@@ -30,7 +30,6 @@
   .display{ font-family:'Prompt', sans-serif; font-weight:800; font-style:italic; letter-spacing:-0.01em; }
   .num{ font-family:'Bebas Neue', sans-serif; letter-spacing:0.01em; }
 
-  /* diagonal stripe motif, echoing the reference poster corner */
   .stripes{
     position:fixed; top:0; right:0; width:240px; height:240px; pointer-events:none; z-index:0; opacity:.5;
     background-image: repeating-linear-gradient(115deg, var(--red) 0 10px, transparent 10px 22px);
@@ -43,64 +42,57 @@
     background-size: 16px 16px;
   }
 
-  header.hero{
-    position:relative; z-index:1;
-    padding: 56px 24px 40px;
-    max-width: 1080px; margin:0 auto;
-  }
-  .eyebrow{
-    display:inline-flex; align-items:center; gap:8px;
-    font-size:13px; letter-spacing:0.14em; color:var(--red-glow);
-    text-transform:uppercase; font-weight:600;
-  }
+  header.hero{ position:relative; z-index:1; padding: 56px 24px 40px; max-width: 1080px; margin:0 auto; }
+  .eyebrow{ display:inline-flex; align-items:center; gap:8px; font-size:13px; letter-spacing:0.14em; color:var(--red-glow); text-transform:uppercase; font-weight:600; }
   .eyebrow::before{content:''; width:18px; height:2px; background:var(--red-glow); display:inline-block;}
   h1.hero-title{
-    font-size: clamp(34px, 7vw, 64px);
-    line-height:1.02;
-    margin-top:14px;
-    text-transform:uppercase;
+    font-size: clamp(34px, 7vw, 64px); line-height:1.02; margin-top:14px; text-transform:uppercase;
     background: linear-gradient(180deg, #ffffff 0%, #d9cfd2 60%, #a89297 100%);
     -webkit-background-clip:text; background-clip:text; color:transparent;
     text-shadow: 0 2px 30px rgba(216,27,63,0.25);
   }
-  .hero-title .accent{
-    background: linear-gradient(180deg, var(--red-glow), var(--red-deep));
-    -webkit-background-clip:text; background-clip:text; color:transparent;
-  }
+  .hero-title .accent{ background: linear-gradient(180deg, var(--red-glow), var(--red-deep)); -webkit-background-clip:text; background-clip:text; color:transparent; }
   .hero-sub{ margin-top:16px; color:var(--grey); font-size:16px; max-width:520px; line-height:1.7; }
 
   .price-tag{
-    position:absolute; top:40px; right:24px;
-    background: linear-gradient(135deg, var(--red-deep), var(--red));
-    padding:14px 22px 16px; border-radius:6px;
-    transform: rotate(3deg);
+    position:absolute; top:40px; right:24px; background: linear-gradient(135deg, var(--red-deep), var(--red));
+    padding:14px 22px 16px; border-radius:6px; transform: rotate(3deg);
     box-shadow: 0 14px 34px rgba(216,27,63,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
   }
-  .price-tag::after{
-    content:''; position:absolute; left:-9px; top:50%; transform:translateY(-50%);
-    border:9px solid transparent; border-right-color:var(--red-deep);
-  }
+  .price-tag::after{ content:''; position:absolute; left:-9px; top:50%; transform:translateY(-50%); border:9px solid transparent; border-right-color:var(--red-deep); }
   .price-tag .p-label{ font-size:11px; letter-spacing:0.1em; text-transform:uppercase; opacity:.85;}
   .price-tag .p-value{ font-family:'Bebas Neue'; font-size:40px; line-height:1; color:#fff; }
   .price-tag .p-unit{ font-size:16px; }
   @media (max-width: 640px){ .price-tag{ position:static; display:inline-block; margin-top:22px; transform:rotate(-1.5deg);} }
 
   section{ position:relative; z-index:1; max-width:1080px; margin:0 auto; padding: 20px 24px 60px; }
+
+  .progress{ display:flex; align-items:center; gap:6px; max-width:1080px; margin:0 auto; padding:0 24px; position:relative; z-index:1; }
+  .progress .pstep{ display:flex; align-items:center; gap:10px; flex:1; }
+  .progress .pnum{
+    width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-family:'Bebas Neue'; font-size:15px; border:1px solid var(--line); color:var(--grey);
+    background:var(--panel); flex:0 0 auto; transition: all .2s;
+  }
+  .progress .plabel{ font-size:12px; color:var(--grey); white-space:nowrap; display:none; }
+  @media (min-width:820px){ .progress .plabel{ display:inline; } }
+  .progress .pline{ flex:1; height:1px; background:var(--line); }
+  .progress .pstep.done .pnum{ background: var(--red); border-color:var(--red); color:#fff; }
+  .progress .pstep.active .pnum{ background: linear-gradient(135deg, var(--red-glow), var(--red-deep)); border-color:var(--red-glow); color:#fff; box-shadow:0 0 0 4px rgba(216,27,63,0.18); }
+  .progress .pstep.active .plabel, .progress .pstep.done .plabel{ color:var(--white); }
+
+  .step-panel{ display:none; }
+  .step-panel.active{ display:block; }
+
   .section-head{ display:flex; align-items:baseline; gap:12px; margin-bottom:22px; }
   .section-head .idx{ font-family:'Bebas Neue'; color:var(--red-glow); font-size:22px; }
   .section-head h2{ font-family:'Prompt'; font-weight:700; font-size:22px; text-transform:uppercase; letter-spacing:0.01em; }
   .section-head p{ color:var(--grey); font-size:13.5px; margin-left:auto; text-align:right; }
 
-  /* day tabs - filmstrip style */
-  .day-tabs{
-    display:flex; gap:10px; overflow-x:auto; padding-bottom:14px; margin-bottom:8px;
-    scrollbar-width:thin; scrollbar-color: var(--red-deep) transparent;
-  }
+  .day-tabs{ display:flex; gap:10px; overflow-x:auto; padding-bottom:14px; margin-bottom:8px; scrollbar-width:thin; scrollbar-color: var(--red-deep) transparent; }
   .day-tab{
-    flex:0 0 auto; cursor:pointer; user-select:none;
-    background:var(--panel); border:1px solid var(--line); border-radius:10px;
-    padding:12px 16px; text-align:center; min-width:76px;
-    transition: border-color .15s, background .15s, transform .15s;
+    flex:0 0 auto; cursor:pointer; user-select:none; background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    padding:12px 16px; text-align:center; min-width:76px; transition: border-color .15s, background .15s, transform .15s;
   }
   .day-tab .dow{ font-size:11px; color:var(--grey); text-transform:uppercase; letter-spacing:.06em;}
   .day-tab .dom{ font-family:'Bebas Neue'; font-size:26px; margin-top:2px; }
@@ -108,95 +100,90 @@
   .day-tab.active{ background: linear-gradient(160deg, var(--red-deep), #3a0a15); border-color: var(--red); transform: translateY(-2px); box-shadow:0 8px 20px rgba(216,27,63,.25); }
   .day-tab.active .dow, .day-tab.active .mon{ color:#e9c7cf; }
 
-  .slots{ display:grid; grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); gap:12px; }
-  .slot{
-    position:relative; border-radius:10px; padding:14px 12px; text-align:center;
-    border:1px solid var(--line); background:var(--panel); cursor:pointer;
-    transition: transform .12s, border-color .12s, background .12s;
-  }
-  .slot .t{ font-family:'Bebas Neue'; font-size:22px; }
-  .slot .s{ font-size:11px; color:var(--grey); margin-top:4px; display:block; }
-  .slot:hover:not(.booked):not(.mine){ border-color:var(--red); transform:translateY(-2px); }
-  .slot.booked{ opacity:.4; cursor:not-allowed; }
-  .slot.booked .s{ color:#c5747f; }
-  .slot.mine{ background: linear-gradient(160deg, var(--red), var(--red-deep)); border-color:var(--red-glow); cursor:pointer; }
-  .slot.mine .s{ color:#ffd9de; }
-  /* film perforation dots on the slot card top/bottom */
-  .slot::before, .slot::after{
-    content:''; position:absolute; left:10px; right:10px; height:1px;
-    background-image: radial-gradient(circle, var(--line) 1.4px, transparent 1.4px);
-    background-size: 8px 100%;
-  }
-  .slot::before{ top:4px; } .slot::after{ bottom:4px; }
-
   .empty-note{ color:var(--grey); font-size:13.5px; padding:18px 4px; }
 
-  /* my bookings */
+  /* timeline dual-slider */
+  .timeline{ position:relative; height:64px; background:var(--panel); border:1px solid var(--line); border-radius:12px; margin-top:40px; }
+  .timeline .tick{ position:absolute; top:100%; margin-top:9px; font-size:10.5px; color:var(--grey); transform:translateX(-50%); }
+  .timeline .blocked{ position:absolute; top:0; bottom:0; border-radius:4px; background: repeating-linear-gradient(115deg, rgba(216,27,63,0.30) 0 6px, rgba(216,27,63,0.10) 6px 12px); }
+  .timeline .range-fill{ position:absolute; top:0; bottom:0; background: linear-gradient(135deg, var(--red-glow), var(--red-deep)); border-radius:8px; opacity:.92; }
+  .timeline .handle{
+    position:absolute; top:50%; width:24px; height:24px; border-radius:50%; background:#fff; border:3px solid var(--red);
+    transform:translate(-50%,-50%); cursor:grab; touch-action:none; box-shadow:0 4px 10px rgba(0,0,0,.45); z-index:3;
+  }
+  .timeline .handle:active{ cursor:grabbing; }
+  .timeline .handle-label{
+    position:absolute; bottom:100%; margin-bottom:8px; transform:translateX(-50%); font-family:'Bebas Neue'; font-size:15px;
+    background:var(--panel-2); border:1px solid var(--line); padding:3px 9px; border-radius:6px; white-space:nowrap; pointer-events:none;
+  }
+
+  .duration-summary{ display:flex; gap:26px; margin-top:46px; flex-wrap:wrap; }
+  .duration-summary .d-label{ font-size:11px; color:var(--grey); text-transform:uppercase; letter-spacing:.06em;}
+  .duration-summary .d-value{ font-family:'Bebas Neue'; font-size:26px; margin-top:2px; }
+
+  .warn{ color:var(--red-glow); font-size:13px; margin-top:14px; display:none; }
+  .warn.show{ display:block; }
+
+  .field{ margin-bottom:14px; max-width:380px; }
+  .field label{ font-size:12.5px; color:var(--grey); display:block; margin-bottom:6px; }
+  .field input{ width:100%; background:#0f0a0c; border:1px solid var(--line); border-radius:8px; padding:10px 12px; color:var(--white); font-family:'IBM Plex Sans Thai'; font-size:14px; }
+  .field input:focus{ outline:none; border-color:var(--red); }
+  .error-msg{ color:var(--red-glow); font-size:12.5px; margin-top:-6px; margin-bottom:10px; display:none; max-width:380px; }
+
+  .recap{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin-bottom:20px; max-width:380px; display:flex; align-items:center; gap:14px; }
+  .recap .rd{ font-family:'Bebas Neue'; font-size:15px; color:var(--red-glow); }
+  .recap .rt{ font-family:'Bebas Neue'; font-size:22px; }
+
+  .discount-row{ display:flex; gap:10px; max-width:380px; }
+  .discount-row input{ flex:1; text-transform:uppercase; }
+  .btn-apply{ background:var(--panel-2); border:1px solid var(--line); color:var(--white); padding:0 16px; border-radius:8px; cursor:pointer; font-family:'IBM Plex Sans Thai'; font-size:13.5px; }
+  .btn-apply:hover{ border-color:var(--red); }
+  .discount-msg{ font-size:12.5px; margin-top:8px; display:none; }
+  .discount-msg.ok{ color:#5fd98a; display:block; }
+  .discount-msg.err{ color:var(--red-glow); display:block; }
+
+  .price-recap{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px 18px; max-width:380px; margin-top:18px; }
+  .price-recap .pr-row{ display:flex; justify-content:space-between; font-size:13.5px; padding:5px 0; color:var(--grey); }
+  .price-recap .pr-row.total{ color:var(--white); font-weight:600; border-top:1px dashed var(--line); margin-top:6px; padding-top:10px; font-size:15px; }
+  .price-recap .strike{ text-decoration:line-through; opacity:.6; margin-right:6px; }
+
+  .pay-methods{ display:flex; flex-direction:column; gap:10px; max-width:420px; }
+  .pay-card{ display:flex; align-items:center; gap:12px; border:1px solid var(--line); border-radius:10px; padding:14px 16px; cursor:pointer; background:var(--panel); transition: border-color .15s, background .15s; }
+  .pay-card .pc-icon{ width:34px; height:34px; border-radius:8px; background:var(--panel-2); display:flex; align-items:center; justify-content:center; font-size:16px; flex:0 0 auto; }
+  .pay-card .pc-name{ font-weight:600; font-size:14px; }
+  .pay-card .pc-desc{ font-size:12px; color:var(--grey); margin-top:2px; }
+  .pay-card.selected{ border-color:var(--red); background: linear-gradient(160deg, rgba(216,27,63,.12), rgba(110,15,33,.12)); }
+  .pay-detail{ margin-top:14px; padding:14px 16px; background:var(--panel-2); border:1px solid var(--line); border-radius:10px; font-size:13px; color:var(--grey); max-width:420px; display:none; }
+  .pay-detail.show{ display:block; }
+  .free-note{ color:#5fd98a; font-size:13.5px; margin-top:10px; max-width:420px; }
+
+  .spinner{ display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; margin-right:8px; vertical-align:-2px; }
+  @keyframes spin{ to{ transform:rotate(360deg);} }
+
   .booking-list{ display:flex; flex-direction:column; gap:10px; }
-  .booking-card{
-    display:flex; align-items:center; gap:16px;
-    background:var(--panel); border:1px solid var(--line); border-radius:12px;
-    padding:14px 16px;
-  }
-  .booking-card .stub{
-    font-family:'Bebas Neue'; font-size:15px; color:var(--red-glow);
-    border-right:1px dashed var(--line); padding-right:16px; min-width:96px; text-align:center;
-  }
-  .booking-card .stub .tt{ font-size:24px; color:#fff; }
+  .booking-card{ display:flex; align-items:center; gap:16px; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
+  .booking-card .stub{ font-family:'Bebas Neue'; font-size:14px; color:var(--red-glow); border-right:1px dashed var(--line); padding-right:16px; min-width:108px; text-align:center; }
+  .booking-card .stub .tt{ font-size:19px; color:#fff; }
   .booking-card .info{ flex:1; }
   .booking-card .info .nm{ font-weight:600; font-size:14.5px; }
   .booking-card .info .ph{ font-size:12.5px; color:var(--grey); margin-top:2px; }
-  .cancel-btn{
-    border:1px solid var(--red); color:var(--red-glow); background:transparent;
-    padding:8px 14px; border-radius:8px; font-size:13px; cursor:pointer;
-    font-family:'IBM Plex Sans Thai'; transition: background .15s, color .15s;
-  }
+  .booking-card .info .pr{ font-size:12px; color:#5fd98a; margin-top:2px; }
+  .cancel-btn{ border:1px solid var(--red); color:var(--red-glow); background:transparent; padding:8px 14px; border-radius:8px; font-size:13px; cursor:pointer; font-family:'IBM Plex Sans Thai'; transition: background .15s, color .15s; }
   .cancel-btn:hover{ background:var(--red); color:#fff; }
 
-  /* modal */
-  .overlay{
-    position:fixed; inset:0; background:rgba(6,4,5,0.7); backdrop-filter: blur(3px);
-    display:none; align-items:center; justify-content:center; z-index:50; padding:20px;
-  }
-  .overlay.show{ display:flex; }
-  .modal{
-    background: linear-gradient(180deg, var(--panel-2), var(--panel));
-    border:1px solid var(--line); border-radius:16px; padding:26px; width:100%; max-width:380px;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-  }
-  .modal h3{ font-family:'Prompt'; font-weight:700; font-size:19px; margin-bottom:4px; }
-  .modal .sub{ color:var(--grey); font-size:13px; margin-bottom:18px; }
-  .field{ margin-bottom:14px; }
-  .field label{ font-size:12.5px; color:var(--grey); display:block; margin-bottom:6px; }
-  .field input{
-    width:100%; background:#0f0a0c; border:1px solid var(--line); border-radius:8px;
-    padding:10px 12px; color:var(--white); font-family:'IBM Plex Sans Thai'; font-size:14px;
-  }
-  .field input:focus{ outline:none; border-color:var(--red); }
-  .modal-actions{ display:flex; gap:10px; margin-top:18px; }
-  .btn-primary{
-    flex:1; background: linear-gradient(135deg, var(--red-glow), var(--red-deep));
-    border:none; color:#fff; padding:11px; border-radius:9px; font-weight:600;
-    font-family:'IBM Plex Sans Thai'; cursor:pointer; font-size:14px;
-  }
-  .btn-ghost{
-    background:transparent; border:1px solid var(--line); color:var(--grey);
-    padding:11px 16px; border-radius:9px; cursor:pointer; font-family:'IBM Plex Sans Thai'; font-size:14px;
-  }
-  .error-msg{ color:var(--red-glow); font-size:12.5px; margin-top:-6px; margin-bottom:10px; display:none; }
+  .wizard-actions{ display:flex; gap:10px; margin-top:24px; align-items:center; }
+  .btn-primary{ background: linear-gradient(135deg, var(--red-glow), var(--red-deep)); border:none; color:#fff; padding:12px 22px; border-radius:9px; font-weight:600; font-family:'IBM Plex Sans Thai'; cursor:pointer; font-size:14px; transition: opacity .15s, transform .1s; }
+  .btn-primary:disabled{ opacity:.35; cursor:not-allowed; }
+  .btn-primary:not(:disabled):active{ transform: scale(0.98); }
+  .btn-ghost{ background:transparent; border:1px solid var(--line); color:var(--grey); padding:12px 20px; border-radius:9px; cursor:pointer; font-family:'IBM Plex Sans Thai'; font-size:14px; }
+  .btn-ghost:hover{ border-color:var(--red); color:var(--white); }
 
-  .toast{
-    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
-    background:var(--panel); border:1px solid var(--red); color:#fff; padding:12px 20px;
-    border-radius:10px; font-size:13.5px; opacity:0; pointer-events:none; transition: all .25s; z-index:60;
-  }
+  .done-badge{ width:64px; height:64px; border-radius:50%; margin-bottom:18px; background: linear-gradient(135deg, var(--red-glow), var(--red-deep)); display:flex; align-items:center; justify-content:center; font-size:28px; box-shadow: 0 10px 30px rgba(216,27,63,0.35); }
+
+  .toast{ position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--panel); border:1px solid var(--red); color:#fff; padding:12px 20px; border-radius:10px; font-size:13.5px; opacity:0; pointer-events:none; transition: all .25s; z-index:60; }
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 
-  footer{
-    position:relative; z-index:1; border-top:1px solid var(--line); margin-top:20px;
-    padding:26px 24px 40px; max-width:1080px; margin-left:auto; margin-right:auto;
-    display:flex; flex-wrap:wrap; gap:18px 32px; align-items:center; justify-content:space-between;
-  }
+  footer{ position:relative; z-index:1; border-top:1px solid var(--line); margin-top:20px; padding:26px 24px 40px; max-width:1080px; margin-left:auto; margin-right:auto; display:flex; flex-wrap:wrap; gap:18px 32px; align-items:center; justify-content:space-between; }
   .brand{ font-family:'Prompt'; font-weight:800; font-style:italic; font-size:15px; }
   .brand span{ color:var(--red-glow); }
   .contacts{ display:flex; flex-wrap:wrap; gap:18px; font-size:13px; color:var(--grey); }
@@ -214,35 +201,102 @@
 <header class="hero">
   <span class="eyebrow">Photography Booking</span>
   <h1 class="hero-title">จองคิว<br><span class="accent">ถ่ายภาพ</span> ออนไลน์</h1>
-  <p class="hero-sub">เลือกวันและเวลาที่ว่าง ยืนยันการจองได้ทันที และยกเลิกได้ตลอดเวลาก่อนถึงคิวของคุณ ไม่มีค่าธรรมเนียม</p>
+  <p class="hero-sub">เลือกวัน ลากช่วงเวลาที่ต้องการถ่าย ชำระเงิน แล้วรับการยืนยันทันที ยกเลิกได้ตลอดเวลา</p>
   <div class="price-tag">
     <div class="p-label">เริ่มต้นเพียง</div>
-    <div class="p-value">300<span class="p-unit">.-</span></div>
+    <div class="p-value">150<span class="p-unit">.-/ชม.</span></div>
   </div>
 </header>
 
-<section>
-  <div class="section-head">
-    <span class="idx">01</span>
-    <h2>เลือกวันที่</h2>
-    <p id="monthLabel"></p>
-  </div>
-  <div class="day-tabs" id="dayTabs"></div>
+<div class="progress" id="progress"></div>
 
-  <div class="section-head" style="margin-top:26px;">
-    <span class="idx">02</span>
-    <h2>เลือกรอบเวลา</h2>
-    <p>สีแดง = คิวของคุณ · จาง = เต็มแล้ว</p>
+<section>
+  <!-- STEP 1: choose date -->
+  <div class="step-panel active" data-step="1">
+    <div class="section-head"><span class="idx">01</span><h2>เลือกวันที่</h2><p id="monthLabel"></p></div>
+    <div class="day-tabs" id="dayTabs"></div>
+    <div class="wizard-actions"><button class="btn-primary" onclick="goStep(2)">ถัดไป</button></div>
   </div>
-  <div class="slots" id="slots"></div>
+
+  <!-- STEP 2: choose time range -->
+  <div class="step-panel" data-step="2">
+    <div class="section-head"><span class="idx">02</span><h2>เลือกช่วงเวลาถ่ายภาพ</h2><p>ลากจุดสองข้างเพื่อกำหนดช่วงเวลา</p></div>
+    <div class="timeline" id="timeline">
+      <div class="range-fill" id="rangeFill"></div>
+      <div class="handle-label" id="startLabel"></div>
+      <div class="handle-label" id="endLabel"></div>
+      <div class="handle" id="startHandle"></div>
+      <div class="handle" id="endHandle"></div>
+    </div>
+    <div class="duration-summary">
+      <div><div class="d-label">เริ่ม</div><div class="d-value" id="dStart">-</div></div>
+      <div><div class="d-label">ถึง</div><div class="d-value" id="dEnd">-</div></div>
+      <div><div class="d-label">รวม</div><div class="d-value" id="dHours">-</div></div>
+      <div><div class="d-label">ราคา</div><div class="d-value" id="dPrice">-</div></div>
+    </div>
+    <div class="warn" id="overlapWarn">ช่วงเวลาที่เลือกทับซ้อนกับคิวที่จองไว้แล้ว กรุณาลากเลือกช่วงใหม่</div>
+    <div class="wizard-actions">
+      <button class="btn-ghost" onclick="goStep(1)">ย้อนกลับ</button>
+      <button class="btn-primary" id="toStep3" onclick="goStep(3)">ถัดไป</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: details + discount -->
+  <div class="step-panel" data-step="3">
+    <div class="section-head"><span class="idx">03</span><h2>กรอกข้อมูลผู้จอง</h2></div>
+    <div class="recap" id="recap3"></div>
+    <div class="field"><label>ชื่อผู้จอง</label><input id="inName" type="text" placeholder="ชื่อ-นามสกุล" /></div>
+    <div class="field"><label>เบอร์โทรศัพท์</label><input id="inPhone" type="tel" placeholder="08x-xxx-xxxx" /></div>
+    <div class="error-msg" id="errMsg">กรุณากรอกชื่อและเบอร์โทรให้ครบถ้วน</div>
+
+    <div class="field"><label>โค้ดส่วนลด (ถ้ามี)</label>
+      <div class="discount-row">
+        <input id="inCode" type="text" placeholder="กรอกโค้ดส่วนลด" />
+        <button class="btn-apply" onclick="applyCode()">ใช้โค้ด</button>
+      </div>
+      <div class="discount-msg" id="codeMsg"></div>
+    </div>
+
+    <div class="price-recap" id="priceRecap3"></div>
+
+    <div class="wizard-actions">
+      <button class="btn-ghost" onclick="goStep(2)">ย้อนกลับ</button>
+      <button class="btn-primary" onclick="toPayment()">ถัดไป</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: payment -->
+  <div class="step-panel" data-step="4">
+    <div class="section-head"><span class="idx">04</span><h2>ชำระเงิน</h2></div>
+    <div class="price-recap" id="priceRecap4" style="margin-bottom:20px;"></div>
+
+    <div id="freeBlock" style="display:none;">
+      <div class="free-note">ยอดชำระ 0 บาท — ไม่ต้องชำระเงิน กดยืนยันเพื่อจองคิวได้เลย</div>
+    </div>
+
+    <div id="payBlock">
+      <div class="pay-methods" id="payMethods"></div>
+      <div class="pay-detail" id="payDetail"></div>
+    </div>
+
+    <div class="error-msg" id="payErr">กรุณาเลือกช่องทางชำระเงิน</div>
+    <div class="wizard-actions">
+      <button class="btn-ghost" onclick="goStep(3)">ย้อนกลับ</button>
+      <button class="btn-primary" id="payBtn" onclick="doPayment()">ยืนยันการชำระเงิน</button>
+    </div>
+  </div>
+
+  <!-- STEP 5: done -->
+  <div class="step-panel" data-step="5">
+    <div class="section-head"><span class="idx">05</span><h2>จองสำเร็จ</h2></div>
+    <div class="done-badge">✓</div>
+    <p class="hero-sub" id="doneMsg" style="margin-bottom:22px;"></p>
+    <div class="wizard-actions"><button class="btn-primary" onclick="resetWizard()">จองคิวเพิ่ม</button></div>
+  </div>
 </section>
 
 <section>
-  <div class="section-head">
-    <span class="idx">03</span>
-    <h2>คิวของฉัน</h2>
-    <p id="myCount"></p>
-  </div>
+  <div class="section-head"><span class="idx">•</span><h2>คิวของฉัน</h2><p id="myCount"></p></div>
   <div class="booking-list" id="myBookings"></div>
 </section>
 
@@ -255,158 +309,329 @@
   </div>
 </footer>
 
-<div class="overlay" id="overlay">
-  <div class="modal">
-    <h3>ยืนยันการจอง</h3>
-    <div class="sub" id="modalSub"></div>
-    <div class="field">
-      <label>ชื่อผู้จอง</label>
-      <input id="inName" type="text" placeholder="ชื่อ-นามสกุล" />
-    </div>
-    <div class="field">
-      <label>เบอร์โทรศัพท์</label>
-      <input id="inPhone" type="tel" placeholder="08x-xxx-xxxx" />
-    </div>
-    <div class="error-msg" id="errMsg">กรุณากรอกชื่อและเบอร์โทรให้ครบถ้วน</div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeModal()">ยกเลิก</button>
-      <button class="btn-primary" onclick="confirmBooking()">ยืนยันจอง</button>
-    </div>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
 
 <script>
-const TIMES = ['10:00','12:00','14:00','16:00','18:00'];
 const THAI_DOW = ['อา','จ','อ','พ','พฤ','ศ','ส'];
 const THAI_MON = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const STEP_LABELS = ['วันที่','เวลา','ข้อมูล','ชำระเงิน','เสร็จสิ้น'];
+const RATE_PER_HOUR = 150;
+const T_MIN = 8, T_MAX = 20, T_STEP = 0.5, MIN_DURATION = 1;
+const DISCOUNT_CODE = 'SR.PK_C0D3FREE';
+
+const PAY_METHODS = [
+  { id:'promptpay', icon:'📱', name:'พร้อมเพย์ (สแกน QR)', desc:'สแกนจ่ายผ่านแอปธนาคารของคุณ' },
+  { id:'transfer', icon:'🏦', name:'โอนผ่านธนาคาร', desc:'โอนเข้าบัญชีแล้วแนบสลิปยืนยัน' },
+  { id:'card', icon:'💳', name:'บัตรเครดิต / เดบิต', desc:'ชำระผ่านหน้าชำระเงินที่ปลอดภัย' },
+];
 
 let days = [];
 let selectedDay = 0;
-let slotsData = {};   // shared: all booked slots {slotKey: {name, phone, bookedAt}}
-let myIds = [];        // personal: slotKeys that belong to this browser
-let pendingSlotKey = null;
+let startTime = 10, endTime = 12;
+let bookingsByDate = {};   // { dateStr: [ {id,start,end,name,phone,price,discount,method,bookedAt} ] }
+let myIds = [];            // personal: [{date,id}]
+let currentStep = 1;
+let discountApplied = false;
+let selectedMethod = null;
+let currentBookingId = null;
 
 function pad(n){ return n<10 ? '0'+n : ''+n; }
 function fmtDate(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
-function slotKey(dateStr, time){ return dateStr+'_'+time; }
+function fmtTime(t){ const h = Math.floor(t); const m = Math.round((t-h)*60); return pad(h)+':'+pad(m); }
+function money(n){ return n.toLocaleString('th-TH'); }
 
 function buildDays(){
   const today = new Date();
   days = [];
-  for(let i=0;i<10;i++){
-    const d = new Date(today);
-    d.setDate(today.getDate()+i);
-    days.push(d);
-  }
+  for(let i=0;i<10;i++){ const d = new Date(today); d.setDate(today.getDate()+i); days.push(d); }
+}
+
+function renderProgress(){
+  const wrap = document.getElementById('progress');
+  wrap.innerHTML = '';
+  STEP_LABELS.forEach((label,i) => {
+    const n = i+1;
+    const el = document.createElement('div');
+    el.className = 'pstep' + (n===currentStep ? ' active' : '') + (n<currentStep ? ' done' : '');
+    el.innerHTML = `<div class="pnum">${n<currentStep ? '✓' : n}</div><span class="plabel">${label}</span>`;
+    wrap.appendChild(el);
+    if(n < STEP_LABELS.length){ const line=document.createElement('div'); line.className='pline'; wrap.appendChild(line); }
+  });
+}
+
+function goStep(n){
+  currentStep = n;
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.toggle('active', Number(p.dataset.step)===n));
+  renderProgress();
+  if(n===3) renderStep3();
+  if(n===4) renderStep4();
+  window.scrollTo({top: document.getElementById('progress').offsetTop - 20, behavior:'smooth'});
 }
 
 function renderDayTabs(){
   const wrap = document.getElementById('dayTabs');
   wrap.innerHTML = '';
-  days.forEach((d, i) => {
+  days.forEach((d,i) => {
     const el = document.createElement('div');
     el.className = 'day-tab' + (i===selectedDay ? ' active' : '');
     el.innerHTML = `<div class="dow">${THAI_DOW[d.getDay()]}</div><div class="dom">${d.getDate()}</div><div class="mon">${THAI_MON[d.getMonth()]}</div>`;
-    el.onclick = () => { selectedDay = i; renderDayTabs(); renderSlots(); };
+    el.onclick = () => { selectedDay = i; renderDayTabs(); renderTimeline(); };
     wrap.appendChild(el);
   });
   document.getElementById('monthLabel').textContent = 'วันนี้ ' + fmtDate(days[0]);
 }
 
-function renderSlots(){
-  const wrap = document.getElementById('slots');
-  wrap.innerHTML = '';
-  const d = days[selectedDay];
-  const dateStr = fmtDate(d);
-  TIMES.forEach(t => {
-    const key = slotKey(dateStr, t);
-    const booked = !!slotsData[key];
-    const mine = myIds.includes(key);
-    const el = document.createElement('div');
-    el.className = 'slot' + (booked && !mine ? ' booked' : '') + (mine ? ' mine' : '');
-    el.innerHTML = `<div class="t">${t}</div><span class="s">${mine ? 'คิวของคุณ · แตะเพื่อยกเลิก' : (booked ? 'เต็มแล้ว' : 'ว่าง')}</span>`;
-    el.onclick = () => {
-      if(mine){ cancelBooking(key); }
-      else if(!booked){ openModal(key, dateStr, t); }
-    };
-    wrap.appendChild(el);
-  });
+function getBlockedRanges(){
+  const dateStr = fmtDate(days[selectedDay]);
+  const list = bookingsByDate[dateStr] || [];
+  const mine = new Set(myIds.filter(m=>m.date===dateStr).map(m=>m.id));
+  return list.filter(b => !mine.has(b.id)).map(b => [b.start, b.end]);
 }
 
-function renderMyBookings(){
-  const wrap = document.getElementById('myBookings');
-  const mine = myIds.filter(k => slotsData[k]).sort();
-  document.getElementById('myCount').textContent = mine.length + ' คิว';
-  if(mine.length === 0){
-    wrap.innerHTML = '<div class="empty-note">ยังไม่มีคิวที่จอง — เลือกวันและเวลาด้านบนเพื่อเริ่มจอง</div>';
-    return;
+function overlapsBlocked(s,e){
+  return getBlockedRanges().some(([bs,be]) => s < be && e > bs);
+}
+
+function pctOf(t){ return (t-T_MIN)/(T_MAX-T_MIN)*100; }
+
+function renderTimeline(){
+  const tl = document.getElementById('timeline');
+  // clear old ticks/blocked
+  tl.querySelectorAll('.tick, .blocked').forEach(n => n.remove());
+  for(let h=T_MIN; h<=T_MAX; h+=2){
+    const tick = document.createElement('div');
+    tick.className='tick'; tick.style.left = pctOf(h)+'%'; tick.textContent = h+':00';
+    tl.appendChild(tick);
   }
-  wrap.innerHTML = '';
-  mine.forEach(key => {
-    const [dateStr, time] = key.split('_');
-    const info = slotsData[key];
-    const d = new Date(dateStr);
-    const el = document.createElement('div');
-    el.className = 'booking-card';
-    el.innerHTML = `
-      <div class="stub">${THAI_DOW[d.getDay()]} ${d.getDate()} ${THAI_MON[d.getMonth()]}<div class="tt">${time}</div></div>
-      <div class="info">
-        <div class="nm">${info.name}</div>
-        <div class="ph">${info.phone}</div>
-      </div>
-      <button class="cancel-btn" onclick="cancelBooking('${key}')">ยกเลิก</button>
-    `;
-    wrap.appendChild(el);
+  getBlockedRanges().forEach(([bs,be]) => {
+    const seg = document.createElement('div');
+    seg.className='blocked';
+    seg.style.left = pctOf(bs)+'%'; seg.style.width = (pctOf(be)-pctOf(bs))+'%';
+    tl.appendChild(seg);
+  });
+  updateTimelineVisuals();
+}
+
+function updateTimelineVisuals(){
+  document.getElementById('startHandle').style.left = pctOf(startTime)+'%';
+  document.getElementById('endHandle').style.left = pctOf(endTime)+'%';
+  document.getElementById('rangeFill').style.left = pctOf(startTime)+'%';
+  document.getElementById('rangeFill').style.width = (pctOf(endTime)-pctOf(startTime))+'%';
+  document.getElementById('startLabel').style.left = pctOf(startTime)+'%';
+  document.getElementById('startLabel').textContent = fmtTime(startTime);
+  document.getElementById('endLabel').style.left = pctOf(endTime)+'%';
+  document.getElementById('endLabel').textContent = fmtTime(endTime);
+
+  const dur = endTime - startTime;
+  document.getElementById('dStart').textContent = fmtTime(startTime);
+  document.getElementById('dEnd').textContent = fmtTime(endTime);
+  document.getElementById('dHours').textContent = dur + ' ชม.';
+  document.getElementById('dPrice').textContent = money(dur*RATE_PER_HOUR)+' ฿';
+
+  const overlap = overlapsBlocked(startTime, endTime);
+  document.getElementById('overlapWarn').classList.toggle('show', overlap);
+  document.getElementById('toStep3').disabled = overlap;
+}
+
+function setupDrag(handleEl, isStart){
+  handleEl.addEventListener('pointerdown', (e) => {
+    handleEl.setPointerCapture(e.pointerId);
+    const tl = document.getElementById('timeline');
+    const rect = tl.getBoundingClientRect();
+    function move(ev){
+      const x = ev.clientX - rect.left;
+      let pct = Math.min(Math.max(x/rect.width,0),1);
+      let t = T_MIN + pct*(T_MAX-T_MIN);
+      t = Math.round(t/T_STEP)*T_STEP;
+      if(isStart){ t = Math.min(t, endTime-MIN_DURATION); t = Math.max(t, T_MIN); startTime = t; }
+      else { t = Math.max(t, startTime+MIN_DURATION); t = Math.min(t, T_MAX); endTime = t; }
+      updateTimelineVisuals();
+    }
+    function up(ev){
+      handleEl.releasePointerCapture(e.pointerId);
+      document.removeEventListener('pointermove', move);
+      document.removeEventListener('pointerup', up);
+    }
+    document.addEventListener('pointermove', move);
+    document.addEventListener('pointerup', up);
   });
 }
 
-function openModal(key, dateStr, time){
-  pendingSlotKey = key;
-  const d = new Date(dateStr);
-  document.getElementById('modalSub').textContent = `วัน${THAI_DOW[d.getDay()]}ที่ ${d.getDate()} ${THAI_MON[d.getMonth()]} เวลา ${time} น.`;
-  document.getElementById('inName').value = '';
-  document.getElementById('inPhone').value = '';
-  document.getElementById('errMsg').style.display = 'none';
-  document.getElementById('overlay').classList.add('show');
-}
-function closeModal(){
-  document.getElementById('overlay').classList.remove('show');
-  pendingSlotKey = null;
+function computePrice(){
+  const dur = endTime - startTime;
+  const subtotal = dur * RATE_PER_HOUR;
+  const total = discountApplied ? 0 : subtotal;
+  return { dur, subtotal, total };
 }
 
-async function confirmBooking(){
+function renderStep3(){
+  const d = days[selectedDay];
+  document.getElementById('recap3').innerHTML = `
+    <div><div class="rd">${THAI_DOW[d.getDay()]}ที่ ${d.getDate()} ${THAI_MON[d.getMonth()]}</div>
+    <div class="rt">${fmtTime(startTime)} - ${fmtTime(endTime)} น. (${endTime-startTime} ชม.)</div></div>`;
+  renderPriceRecap('priceRecap3');
+}
+
+function renderPriceRecap(targetId){
+  const { dur, subtotal, total } = computePrice();
+  let html = `<div class="pr-row"><span>ค่าถ่ายภาพ (${dur} ชม. x ${RATE_PER_HOUR}.-)</span><span>${money(subtotal)} ฿</span></div>`;
+  if(discountApplied){
+    html += `<div class="pr-row"><span>ส่วนลด (${DISCOUNT_CODE})</span><span>-${money(subtotal)} ฿</span></div>`;
+  }
+  html += `<div class="pr-row total"><span>ยอดชำระ</span><span>${discountApplied ? '<span class="strike">'+money(subtotal)+' ฿</span>' : ''}${money(total)} ฿</span></div>`;
+  document.getElementById(targetId).innerHTML = html;
+}
+
+function applyCode(){
+  const val = document.getElementById('inCode').value.trim();
+  const msg = document.getElementById('codeMsg');
+  if(val.toUpperCase() === DISCOUNT_CODE.toUpperCase()){
+    discountApplied = true;
+    msg.textContent = 'ใช้โค้ดส่วนลดสำเร็จ — ยอดชำระเป็น 0 บาท';
+    msg.className = 'discount-msg ok';
+  } else {
+    discountApplied = false;
+    msg.textContent = 'โค้ดไม่ถูกต้อง กรุณาลองใหม่';
+    msg.className = 'discount-msg err';
+  }
+  renderPriceRecap('priceRecap3');
+}
+
+function toPayment(){
   const name = document.getElementById('inName').value.trim();
   const phone = document.getElementById('inPhone').value.trim();
-  if(!name || !phone){
-    document.getElementById('errMsg').style.display = 'block';
-    return;
+  if(!name || !phone){ document.getElementById('errMsg').style.display='block'; return; }
+  document.getElementById('errMsg').style.display='none';
+  goStep(4);
+}
+
+function renderStep4(){
+  renderPriceRecap('priceRecap4');
+  const { total } = computePrice();
+  const isFree = total === 0;
+  document.getElementById('freeBlock').style.display = isFree ? 'block' : 'none';
+  document.getElementById('payBlock').style.display = isFree ? 'none' : 'block';
+  document.getElementById('payBtn').textContent = isFree ? 'ยืนยันการจอง' : 'ยืนยันการชำระเงิน';
+
+  if(!isFree){
+    const wrap = document.getElementById('payMethods');
+    wrap.innerHTML = '';
+    PAY_METHODS.forEach(m => {
+      const el = document.createElement('div');
+      el.className = 'pay-card' + (selectedMethod===m.id ? ' selected' : '');
+      el.innerHTML = `<div class="pc-icon">${m.icon}</div><div><div class="pc-name">${m.name}</div><div class="pc-desc">${m.desc}</div></div>`;
+      el.onclick = () => { selectedMethod = m.id; renderStep4(); };
+      wrap.appendChild(el);
+    });
+    const detail = document.getElementById('payDetail');
+    if(selectedMethod){
+      const m = PAY_METHODS.find(x=>x.id===selectedMethod);
+      let text = '';
+      if(m.id==='promptpay') text = 'สแกน QR พร้อมเพย์ผ่านแอปธนาคารของคุณ แล้วกด "ยืนยันการชำระเงิน" เมื่อทำรายการเสร็จ';
+      if(m.id==='transfer') text = 'โอนเงินเข้าบัญชี SIRANA PIKULKAEW แล้วกด "ยืนยันการชำระเงิน" เมื่อโอนเสร็จ';
+      if(m.id==='card') text = 'คุณจะถูกนำไปยังหน้าชำระเงินที่ปลอดภัยเพื่อกรอกข้อมูลบัตร';
+      detail.textContent = text;
+      detail.classList.add('show');
+    } else { detail.classList.remove('show'); }
   }
-  const key = pendingSlotKey;
-  const entry = { name, phone, bookedAt: new Date().toISOString() };
+  document.getElementById('payErr').style.display = 'none';
+}
+
+async function doPayment(){
+  const { total } = computePrice();
+  const isFree = total === 0;
+  if(!isFree && !selectedMethod){ document.getElementById('payErr').style.display='block'; return; }
+
+  const btn = document.getElementById('payBtn');
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>กำลังดำเนินการ...';
+
+  await new Promise(r => setTimeout(r, isFree ? 300 : 900));
+
+  await saveBooking();
+
+  btn.disabled = false;
+  btn.textContent = original;
+}
+
+async function saveBooking(){
+  const name = document.getElementById('inName').value.trim();
+  const phone = document.getElementById('inPhone').value.trim();
+  const d = days[selectedDay];
+  const dateStr = fmtDate(d);
+  const { total } = computePrice();
+  const id = dateStr + '_' + Date.now() + '_' + Math.floor(Math.random()*1000);
+  const entry = {
+    id, start: startTime, end: endTime, name, phone,
+    price: total, discount: discountApplied, method: discountApplied ? null : selectedMethod,
+    bookedAt: new Date().toISOString()
+  };
   try{
-    slotsData[key] = entry;
-    await window.storage.set(key, JSON.stringify(entry), true);
-    myIds.push(key);
+    const list = bookingsByDate[dateStr] ? bookingsByDate[dateStr].slice() : [];
+    list.push(entry);
+    bookingsByDate[dateStr] = list;
+    await window.storage.set('bk_'+dateStr, JSON.stringify(list), true);
+    myIds.push({ date: dateStr, id });
     await window.storage.set('my-booking-ids', JSON.stringify(myIds), false);
-    closeModal();
-    renderSlots();
+
+    document.getElementById('doneMsg').textContent =
+      `จองคิวถ่ายภาพวัน${THAI_DOW[d.getDay()]}ที่ ${d.getDate()} ${THAI_MON[d.getMonth()]} เวลา ${fmtTime(startTime)}-${fmtTime(endTime)} น. เรียบร้อยแล้ว`;
     renderMyBookings();
-    showToast('จองคิวสำเร็จแล้ว ✓');
+    goStep(5);
+    showToast(total===0 ? 'จองคิวสำเร็จแล้ว (ฟรี) ✓' : 'ชำระเงินสำเร็จ จองคิวเรียบร้อย ✓');
   }catch(e){
     showToast('เกิดข้อผิดพลาด กรุณาลองใหม่');
   }
 }
 
-async function cancelBooking(key){
+function resetWizard(){
+  startTime = 10; endTime = 12;
+  discountApplied = false; selectedMethod = null;
+  document.getElementById('inName').value = '';
+  document.getElementById('inPhone').value = '';
+  document.getElementById('inCode').value = '';
+  document.getElementById('codeMsg').className = 'discount-msg';
+  document.getElementById('codeMsg').textContent = '';
+  renderTimeline();
+  goStep(1);
+}
+
+function renderMyBookings(){
+  const wrap = document.getElementById('myBookings');
+  const mine = myIds
+    .map(m => { const b = (bookingsByDate[m.date]||[]).find(x=>x.id===m.id); return b ? {...b, date:m.date} : null; })
+    .filter(Boolean)
+    .sort((a,b) => (a.date+a.start) < (b.date+b.start) ? -1 : 1);
+  document.getElementById('myCount').textContent = mine.length + ' คิว';
+  if(mine.length===0){ wrap.innerHTML = '<div class="empty-note">ยังไม่มีคิวที่จอง — เลือกวันและเวลาด้านบนเพื่อเริ่มจอง</div>'; return; }
+  wrap.innerHTML = '';
+  mine.forEach(b => {
+    const d = new Date(b.date);
+    const el = document.createElement('div');
+    el.className = 'booking-card';
+    el.innerHTML = `
+      <div class="stub">${THAI_DOW[d.getDay()]} ${d.getDate()} ${THAI_MON[d.getMonth()]}<div class="tt">${fmtTime(b.start)}-${fmtTime(b.end)}</div></div>
+      <div class="info">
+        <div class="nm">${b.name}</div>
+        <div class="ph">${b.phone}</div>
+        <div class="pr">${b.price===0 ? 'ฟรี (ใช้โค้ดส่วนลด)' : 'ชำระแล้ว ' + money(b.price) + ' ฿'}</div>
+      </div>
+      <button class="cancel-btn" onclick="cancelBooking('${b.date}','${b.id}')">ยกเลิก</button>
+    `;
+    wrap.appendChild(el);
+  });
+}
+
+async function cancelBooking(dateStr, id){
   try{
-    delete slotsData[key];
-    await window.storage.delete(key, true);
-    myIds = myIds.filter(k => k !== key);
+    const list = (bookingsByDate[dateStr]||[]).filter(b => b.id !== id);
+    bookingsByDate[dateStr] = list;
+    await window.storage.set('bk_'+dateStr, JSON.stringify(list), true);
+    myIds = myIds.filter(m => !(m.date===dateStr && m.id===id));
     await window.storage.set('my-booking-ids', JSON.stringify(myIds), false);
-    renderSlots();
     renderMyBookings();
+    renderTimeline();
     showToast('ยกเลิกคิวเรียบร้อย');
   }catch(e){
     showToast('ยกเลิกไม่สำเร็จ กรุณาลองใหม่');
@@ -416,34 +641,33 @@ async function cancelBooking(key){
 let toastTimer;
 function showToast(msg){
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  t.textContent = msg; t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
 }
 
 async function loadAll(){
   buildDays();
+  renderProgress();
   renderDayTabs();
+  setupDrag(document.getElementById('startHandle'), true);
+  setupDrag(document.getElementById('endHandle'), false);
 
-  // load personal booking id list
   try{
     const mine = await window.storage.get('my-booking-ids', false);
     myIds = mine ? JSON.parse(mine.value) : [];
   }catch(e){ myIds = []; }
 
-  // load shared slot data for the visible date range
-  slotsData = {};
-  const keys = [];
-  days.forEach(d => TIMES.forEach(t => keys.push(slotKey(fmtDate(d), t))));
-  for(const k of keys){
+  bookingsByDate = {};
+  for(const d of days){
+    const dateStr = fmtDate(d);
     try{
-      const r = await window.storage.get(k, true);
-      if(r) slotsData[k] = JSON.parse(r.value);
-    }catch(e){ /* not booked */ }
+      const r = await window.storage.get('bk_'+dateStr, true);
+      if(r) bookingsByDate[dateStr] = JSON.parse(r.value);
+    }catch(e){ /* no bookings that day */ }
   }
 
-  renderSlots();
+  renderTimeline();
   renderMyBookings();
 }
 
